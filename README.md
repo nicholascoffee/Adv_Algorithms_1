@@ -1,1 +1,1 @@
-# Advanced Algorithms: Project #1
+# Projects of Advanced Algorithms
