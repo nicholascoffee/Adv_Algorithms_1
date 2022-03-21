@@ -55,17 +55,20 @@ class Graph:
             self.adjacency_list[a].append(AdjacencyNode(b, weight))
             self.adjacency_list[b].append(AdjacencyNode(a, weight))
 
-            if self.get_edge(a, b) is None:
+            if self.get_edge(a, b) is not None:
                 self.edges.append(Edge(a, b, weight))
 
     def get_all_edges(self) -> List[Edge]:
         return self.edges
 
     def get_edge(self, a: int, b: int) -> Optional[Edge]:
+        weight: Optional[int] = None
+
         for adj_node in self.adjacency_list[a]:
             if adj_node.name == b:
-                return Edge(a, b, adj_node.weight)
-        return None
+                if weight is None or weight > adj_node.weight:  # TODO
+                    weight = adj_node.weight
+        return Edge(a, b, weight)
 
     # get all arcs of given node
     def get_node_edges(self, node_name: int) -> Optional[List[AdjacencyNode]]:
@@ -81,7 +84,7 @@ class Graph:
 
 
 def graph_from_file(filename: str) -> Graph:
-    file: TextIO = open("dataset/" + filename, "r")
+    file: TextIO = open(filename, "r")
     first_line_data: List[str] = file.readline().split()
     n: int = int(first_line_data[0])
     m: int = int(first_line_data[1])
