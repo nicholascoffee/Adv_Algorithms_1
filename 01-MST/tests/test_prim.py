@@ -5,7 +5,7 @@ from unittest import TestCase
 from parameterized import parameterized
 
 import parser
-from graph import Graph, graph_from_file, graph_from_content
+from graph import Graph, graph_from_file
 from prim import prim
 
 
