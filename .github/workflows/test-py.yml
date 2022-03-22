@@ -11,7 +11,6 @@ jobs:
       - name: Execute tests
         with:
           python-version: '3.x' 
-        shell: bash
         run: |
             cd ./01-MST
             pip install -r requirments.txt
