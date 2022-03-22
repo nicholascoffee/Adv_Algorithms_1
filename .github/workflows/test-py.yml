@@ -3,16 +3,24 @@ on: [push]
 jobs:
   check-test:
     runs-on: "ubuntu-latest"
-    env:
-      PYHTONPATH: ../
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
-      - name: Execute tests
-        with:
-          python-version: '3.x' 
-        run: |
-            cd ./01-MST
-            pip install -r requirments.txt
-            cd ./tests/
-            python -m unittest discover -p 'test_*.py'
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        cd ./01-MST/
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Execute tests
+      env:
+        PYTHONPATH: "../"
+      run: |
+        cd ./01-MST/tests/
+        python -m unittest discover -p 'test_*.py'
