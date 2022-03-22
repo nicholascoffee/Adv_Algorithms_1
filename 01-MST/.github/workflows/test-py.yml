@@ -1,0 +1,15 @@
+name: test-pyhton-algorithms
+on: [push]
+jobs:
+  check-test:
+    runs-on: alpine-latest
+    env:
+      PYHTONPATH: ../
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      with:
+        python-version: '3.x' 
+      - run: pip install -r requirments.txt
+      - working-directory: ./tests/
+      - run: python -m unittest discover -p 'test_*.py'
