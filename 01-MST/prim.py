@@ -42,17 +42,17 @@ def prim(graph: Graph, starting_node: int) -> Graph:
 
     nodes[starting_node].key = 0
 
-    for node in nodes.values():
-        heapq.heappush(heap, node)
+    for v in nodes.values():
+        heapq.heappush(heap, v)
 
     while len(heap) != 0:
         heapq.heapify(heap)
         u: HeapNode = heapq.heappop(heap)
 
-        for node in graph.get_node_edges(u.name):
+        for n in graph.get_node_edges(u.name):
 
-            if node in heap:
-                tmp: HeapNode = nodes[node.name]
+            if n in heap:
+                tmp: HeapNode = nodes[n.name]
 
                 heap.remove(tmp)
 

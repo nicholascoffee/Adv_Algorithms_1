@@ -114,7 +114,7 @@ class Graph:
             self.adjacency_list[b] = []
 
         if a != b:  # since we are working with simple graphs, we do not allow self loops
-            existing_edge: Edge = self.get_edge(a, b)
+            existing_edge: Optional[Edge] = self.get_edge(a, b)
             if existing_edge is None:
                 # there isn't any edge that already connect a to b (and vice-versa)
                 # so we update both a and b adjacency nodes (since the graph is undirected)
@@ -193,7 +193,7 @@ class Graph:
                 return Edge(a, b, adj_node.weight)
         return None
 
-    def get_node_edges(self, node_name: int) -> Optional[List[AdjacencyNode]]:
+    def get_node_edges(self, node_name: int) -> List[AdjacencyNode]:
         """
         Returns all adjacency nodes of a given node
 
@@ -208,7 +208,7 @@ class Graph:
             adjacency nodes of the given node if exists on the graph, None otherwise
         """
         if node_name not in self.adjacency_list:
-            return None
+            raise Exception("Node not found")
         return self.adjacency_list[node_name]
 
     def get_all_nodes(self) -> Dict[int, List[AdjacencyNode]]:
@@ -239,7 +239,11 @@ class Graph:
             weight of the edge that connects a to b
 
         """
-        return self.get_edge(a, b).weight
+        edge: Optional[Edge] = self.get_edge(a, b)
+        if edge is not None:
+            return edge.weight
+        else:
+            raise Exception("Edge not found")
 
 
 def graph_from_file(path: str) -> Graph:
