@@ -11,5 +11,5 @@ jobs:
       with:
         python-version: '3.x' 
       - run: pip install -r requirments.txt
-      - working-directory: ./tests/
+      - working-directory: ./01-MST/tests/
       - run: python -m unittest discover -p 'test_*.py'
