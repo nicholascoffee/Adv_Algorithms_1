@@ -25,7 +25,7 @@ class HeapNode:
 
 
 def build_graph(l: Dict[int, HeapNode]) -> Graph:
-    graph: Graph = Graph(0, 0)
+    graph: Graph = Graph(0)
 
     for node in l.values():
         if node.parent != -1:

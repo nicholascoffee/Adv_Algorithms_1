@@ -3,7 +3,9 @@ from typing import TextIO
 from unittest import TestCase
 
 from parameterized import parameterized
-from graph import Graph, graph_from_file
+
+import parser
+from graph import Graph, graph_from_file, graph_from_content
 from prim import prim
 
 
@@ -28,7 +30,11 @@ class TestPrim(TestCase):
          'random_5_20.txt', 'random_6_20.txt', 'random_7_20.txt', 'random_8_20.txt', 'random_9_40.txt'])
     def test_prim(self, file):
         graph: Graph = graph_from_file("dataset/input_" + file)
+
+        # ----------  algorithm call  ----------
         mst: Graph = prim(graph, 1)
+        ########################################
+
         result: int = sum_weights(mst)
 
         file: TextIO = open("dataset/output_" + file)
