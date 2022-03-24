@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from typing import Dict, List, TextIO, Optional
+from typing import Dict, List, Optional
 
 import parser
 
@@ -52,8 +52,8 @@ class Edge:
         self.weight = weight
 
     def __eq__(self, other):
-        return ((self.a == other.a and self.b == other.b) or (self.a == other.b and self.b == other.a)) \
-               and self.weight == other.weigth
+        return ((self.a == other.a and self.b == other.b)
+                or (self.a == other.b and self.b == other.a)) and self.weight == other.weigth
 
 
 @dataclass
@@ -89,8 +89,8 @@ class Graph:
 
     def add_edge(self, a: int, b: int, weight: int) -> None:
         """
-        Add an edge to the undirected graph. If there is already an edge that connect a to b, it keeps
-        only the lighter ones
+        Add an edge to the undirected graph.
+        If there is already an edge that connect a to b, it keeps only the lighter ones
 
         Parameters
         ----------
@@ -123,7 +123,8 @@ class Graph:
                 self.edges.append(Edge(a, b, weight))
                 self.m += 1
             elif existing_edge.weight > weight:
-                # there is an edge that connect a to b, so we just keep the lighter (based on the weight field)
+                # there is an edge that connect a to b, so we just keep the lighter
+                # (based on the weight field)
                 self.update_edge(a, b, weight)
 
     def update_edge(self, a: int, b: int, weight: int) -> None:
@@ -240,10 +241,11 @@ class Graph:
 
         """
         edge: Optional[Edge] = self.get_edge(a, b)
-        if edge is not None:
-            return edge.weight
-        else:
+        if edge is None:
             raise Exception("Edge not found")
+
+        return edge.weight
+
 
 
 def graph_from_file(path: str) -> Graph:

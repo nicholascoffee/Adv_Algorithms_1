@@ -1,7 +1,7 @@
-name: static-type-check
+name: quality-check
 on: [push]
 jobs:
-  type-check:
+  quality-check:
     runs-on: "ubuntu-latest"
 
     steps:
@@ -13,7 +13,7 @@ jobs:
         python-version: '3.x'
 
     - name: Install dependencies
-      run: pip install mypy
+      run: pip install pylint
 
     - name: Execute type checking
-      run: mypy .
+      run: pylint *

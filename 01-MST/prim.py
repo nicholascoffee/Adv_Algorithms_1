@@ -24,10 +24,10 @@ class HeapNode:
         return self.name == other.name
 
 
-def build_graph(l: Dict[int, HeapNode]) -> Graph:
+def build_graph(l_list: Dict[int, HeapNode]) -> Graph:
     graph: Graph = Graph(0)
 
-    for node in l.values():
+    for node in l_list.values():
         if node.parent != -1:
             graph.add_edge(node.name, node.parent, node.key)
     return graph
