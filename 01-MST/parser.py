@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, TextIO, Tuple
+from typing import List, Tuple
 
 
 @dataclass
@@ -47,19 +47,18 @@ def parse(path: str) -> Content:
         a object of type Content representing the content of the parsed file
     """
     content = Content()
-    file: TextIO = open(path, "r")
-    first_line: str = file.readline()
-    # The fist line contains the "n" and "m" value, so it has to be splitted
-    content.n = int(first_line.split()[0])
-    content.m = int(first_line.split()[1])
+    with open(path, "r", encoding="utf-8") as file:
+        first_line: str = file.readline()
+        # The fist line contains the "n" and "m" value, so it has to be splitted
+        content.n = int(first_line.split()[0])
+        content.m = int(first_line.split()[1])
 
-    # Continuing to analyze the file
-    for line in file.readlines():
-        data: List[str] = line.split()
-        # Creating a triple on the fly
-        _triple: Tuple[int, ...] = int(data[0]), int(data[1]), int(data[2])
-        # Adding the triple at the list inside the Content object
-        content.list_triple.append(_triple)
+        # Continuing to analyze the file
+        for line in file.readlines():
+            data: List[str] = line.split()
+            # Creating a triple on the fly
+            _triple: Tuple[int, ...] = int(data[0]), int(data[1]), int(data[2])
+            # Adding the triple at the list inside the Content object
+            content.list_triple.append(_triple)
 
-    file.close()
     return content

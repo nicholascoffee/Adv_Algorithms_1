@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from typing import Dict, List, TextIO, Optional
+from typing import Dict, List, Optional
 
 import parser
 
@@ -52,8 +52,8 @@ class Edge:
         self.weight = weight
 
     def __eq__(self, other):
-        return ((self.a == other.a and self.b == other.b) or (self.a == other.b and self.b == other.a)) \
-               and self.weight == other.weigth
+        return ((self.a == other.a and self.b == other.b)
+                or (self.a == other.b and self.b == other.a)) and self.weight == other.weigth
 
 
 @dataclass
@@ -89,8 +89,8 @@ class Graph:
 
     def add_edge(self, a: int, b: int, weight: int) -> None:
         """
-        Add an edge to the undirected graph. If there is already an edge that connect a to b, it keeps
-        only the lighter ones
+        Add an edge to the undirected graph.
+        If there is already an edge that connect a to b, it keeps only the lighter ones
 
         Parameters
         ----------
@@ -114,7 +114,7 @@ class Graph:
             self.adjacency_list[b] = []
 
         if a != b:  # since we are working with simple graphs, we do not allow self loops
-            existing_edge: Edge = self.get_edge(a, b)
+            existing_edge: Optional[Edge] = self.get_edge(a, b)
             if existing_edge is None:
                 # there isn't any edge that already connect a to b (and vice-versa)
                 # so we update both a and b adjacency nodes (since the graph is undirected)
@@ -123,7 +123,8 @@ class Graph:
                 self.edges.append(Edge(a, b, weight))
                 self.m += 1
             elif existing_edge.weight > weight:
-                # there is an edge that connect a to b, so we just keep the lighter (based on the weight field)
+                # there is an edge that connect a to b, so we just keep the lighter
+                # (based on the weight field)
                 self.update_edge(a, b, weight)
 
     def update_edge(self, a: int, b: int, weight: int) -> None:
@@ -193,7 +194,7 @@ class Graph:
                 return Edge(a, b, adj_node.weight)
         return None
 
-    def get_node_edges(self, node_name: int) -> Optional[List[AdjacencyNode]]:
+    def get_node_edges(self, node_name: int) -> List[AdjacencyNode]:
         """
         Returns all adjacency nodes of a given node
 
@@ -208,7 +209,7 @@ class Graph:
             adjacency nodes of the given node if exists on the graph, None otherwise
         """
         if node_name not in self.adjacency_list:
-            return None
+            raise Exception("Node not found")
         return self.adjacency_list[node_name]
 
     def get_all_nodes(self) -> Dict[int, List[AdjacencyNode]]:
@@ -239,7 +240,12 @@ class Graph:
             weight of the edge that connects a to b
 
         """
-        return self.get_edge(a, b).weight
+        edge: Optional[Edge] = self.get_edge(a, b)
+        if edge is None:
+            raise Exception("Edge not found")
+
+        return edge.weight
+
 
 
 def graph_from_file(path: str) -> Graph:
