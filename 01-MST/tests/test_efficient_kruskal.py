@@ -1,5 +1,6 @@
 import unittest
 from unittest import TestCase
+from parameterized import parameterized
 from typing import Set, TextIO
 from graph import Edge, Graph, graph_from_file
 from kruskal_union_find import kruskalUnfionFind
