@@ -3,7 +3,7 @@ from graph import Edge, Graph
 from union_find import UnionFindSet
 
 def kruskalUnfionFind(graph: Graph) -> Set[Edge]:
-    A: Set[Edge] = Set()
+    A: Set[Edge] = set()
     UF: UnionFindSet = UnionFindSet()
     for node in graph.get_all_nodes().keys():
         UF.make(node)
