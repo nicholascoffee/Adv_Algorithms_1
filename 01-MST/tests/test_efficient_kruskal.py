@@ -1,11 +1,11 @@
 import unittest
 from unittest import TestCase
 from parameterized import parameterized
-from typing import Set, TextIO
+from typing import List, TextIO
 from graph import Edge, Graph, graph_from_file
 from kruskal_union_find import kruskalUnfionFind
 
-def sum_weights(edges: Set[Edge]) -> int:
+def sum_weights(edges: List[Edge]) -> int:
     result: int = 0
     for edge in edges:
         result += edge.weight
@@ -26,7 +26,7 @@ class TestPrim(TestCase):
     def test_prim(self, file):
         graph: Graph = graph_from_file("dataset/input_" + file)
 
-        mst: Set[Edge] = kruskalUnfionFind(graph)
+        mst: List[Edge] = kruskalUnfionFind(graph)
 
         result: int = sum_weights(mst)
 
