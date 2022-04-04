@@ -51,7 +51,7 @@ class UnionFindSet():
 	def find(self, data: int) -> UnionFindNode:
 		element: UnionFindNode = self._map[data]
 		parent: UnionFindNode = element.parent
-		if element != parent:
+		while element != parent:
 			element = element.parent
 			parent = parent.parent
 		return element
