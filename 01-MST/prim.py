@@ -33,7 +33,7 @@ def build_graph(l_list: Dict[int, HeapNode]) -> Graph:
     return graph
 
 
-def prim(graph: Graph, starting_node: int) -> Graph:
+def prim(graph: Graph, starting_node: int = 1) -> Graph:
     nodes: Dict[int, HeapNode] = {}
     heap: List[HeapNode] = []
 
@@ -47,6 +47,7 @@ def prim(graph: Graph, starting_node: int) -> Graph:
 
     while len(heap) != 0:
         heapq.heapify(heap)
+
         u: HeapNode = heapq.heappop(heap)
 
         for n in graph.get_node_edges(u.name):
