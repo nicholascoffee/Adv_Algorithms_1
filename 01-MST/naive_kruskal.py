@@ -43,10 +43,9 @@ def isCyclic(self):
         if visited[i] ==False:
 
             if(self.isCyclicUtil(i,visited,-1)) == True:
-            
-            return True
-         
-    return False
+                return True
+                
+        return False
 
 
 def naive_kruskal(graph: Graph) -> Graph:
@@ -71,6 +70,6 @@ def naive_kruskal(graph: Graph) -> Graph:
         
         if (B.add_edge(a,b,weight).isCyclic)
             A.add_edge(a,b,weight)
-            
+
         i=i+1
     return A
