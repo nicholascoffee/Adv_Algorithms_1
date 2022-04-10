@@ -68,7 +68,7 @@ def naive_kruskal(graph: Graph) -> Graph:
 
     #add in the new graph if the graph created is still acyclic, else continue with the next ndoes
         
-        if (B.add_edge(a,b,weight).isCyclic)
+        if (B.add_edge(a,b,weight).isCyclic == True):
             A.add_edge(a,b,weight)
 
         i=i+1
