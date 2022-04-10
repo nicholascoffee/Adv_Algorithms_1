@@ -53,16 +53,24 @@ def naive_kruskal(graph: Graph) -> Graph:
 
     #empty graph to return with the solution
     
-    A_Graph = new graph
-    nodes = Graph.get_all_nodes
-    
+    A: graph = Graph(0)
+    i=0
     #sorting the edges in crescent order
 
     edges = sorted_edges(Graph)
     
     #check for all the edges sorted the nodes
-    for v in nodes.values
+    for e in edges
+
+        B: graph = A
+        a = edges[i].__getattribute__(a)
+        b = edges[i].__getattribute__(b)
+        weight = edges[i].__getattribute__(weight)
 
     #add in the new graph if the graph created is still acyclic, else continue with the next ndoes
-
-    pass
+        
+        if (B.add_edge(a,b,weight).isCyclic)
+            A.add_edge(a,b,weight)
+            
+        i=i+1
+    return A
