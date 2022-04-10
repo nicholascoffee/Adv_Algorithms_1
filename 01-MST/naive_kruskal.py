@@ -44,7 +44,7 @@ def isCyclic(self):
 
             if(self.isCyclicUtil(i,visited,-1)) == True:
                 return True
-                
+
         return False
 
 
@@ -59,7 +59,7 @@ def naive_kruskal(graph: Graph) -> Graph:
     edges = sorted_edges(Graph)
     
     #check for all the edges sorted the nodes
-    for e in edges
+    for e in edges:
 
         B: graph = A
         a = edges[i].__getattribute__(a)
