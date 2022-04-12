@@ -53,7 +53,13 @@ class Edge:
 
     def __eq__(self, other):
         return ((self.a == other.a and self.b == other.b)
-                or (self.a == other.b and self.b == other.a)) and self.weight == other.weigth
+                or (self.a == other.b and self.b == other.a)) and self.weight == other.weight
+
+    def __lt__(self, other):
+        return self.weight < other.weight
+
+    def connect(self, a: int, b: int) -> bool:
+        return (self.a == a and self.b == b) or (self.a == b and self.b == a)
 
 
 @dataclass
@@ -194,6 +200,23 @@ class Graph:
                 return Edge(a, b, adj_node.weight)
         return None
 
+    def remove_edge(self, a: int, b: int):  # TODO fix
+        a_adj_list = self.get_node_edges(a)
+        b_adj_list = self.get_node_edges(b)
+
+        for i in range(len(a_adj_list)):
+            if a_adj_list[i].name == b:
+                del a_adj_list[i]
+                break
+        for i in range(len(b_adj_list)):
+            if b_adj_list[i].name == a:
+                del b_adj_list[i]
+                break
+        for i in range(len(self.edges)):
+            if self.edges[i].connect(a, b):
+                del self.edges[i]
+                break
+
     def get_node_edges(self, node_name: int) -> List[AdjacencyNode]:
         """
         Returns all adjacency nodes of a given node
@@ -245,6 +268,29 @@ class Graph:
             raise Exception("Edge not found")
 
         return edge.weight
+
+    def is_cyclic(self, start: int):
+        visited: Dict[int, bool] = {start: True}
+        levels: Dict[int, List[int]] = {0: [start]}
+        labels: List[Edge] = []
+
+        current_level: int = 0
+
+        while len(levels[current_level]) != 0:
+            levels[current_level + 1] = []
+            for node in levels[current_level]:
+                for adj_node in self.get_node_edges(node):
+                    edge: Edge = self.get_edge(node, adj_node.name)
+                    if edge not in labels:
+                        w: int = adj_node.name
+                        if w not in visited:
+                            labels.append(edge)
+                            visited[w] = True
+                            levels[current_level + 1].append(w)
+                        else:
+                            return True
+            current_level += 1
+        return False
 
 
 

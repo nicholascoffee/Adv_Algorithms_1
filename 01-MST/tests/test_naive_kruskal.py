@@ -9,7 +9,7 @@ from graph import Graph, graph_from_file
 from naive_kruskal import naive_kruskal
 
 
-def sum_weights(graph: Graph):
+def sum_weights(graph: Graph):  # TODO remove from here
     result: int = 0
     for edge in graph.get_all_edges():
         result += edge.weight
@@ -32,7 +32,7 @@ class TestNaiveKruskal(TestCase):
         graph: Graph = graph_from_file("dataset/input_" + file)
 
         # ----------  algorithm call  ----------
-        mst: Graph = naive_kruscal(graph)
+        mst: Graph = naive_kruskal(graph)
         ########################################
 
         result: int = sum_weights(mst)
