@@ -316,7 +316,7 @@ class Graph:
         
                     return True
         
-            else if  parent != i :
+            elif  parent != i :
         
                 return True
          
