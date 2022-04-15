@@ -268,30 +268,60 @@ class Graph:
             raise Exception("Edge not found")
 
         return edge.weight
+    
+    #def is_cyclic(self, start: int):
+    #    visited: Dict[int, bool] = {start: True}
+    #    levels: List[List[int]] = [[start]]
+    #    labels: List[Edge] = []
 
-    def is_cyclic(self, start: int):
-        visited: Dict[int, bool] = {start: True}
-        levels: List[List[int]] = [[start]]
-        labels: List[Edge] = []
+    #    current_level: int = 0
 
-        current_level: int = 0
+    #    while len(levels[current_level]) != 0:
+    #        levels.append([])
+    #        for node in levels[current_level]:
+    #            for adj_node in self.get_node_edges(node):
+    #                edge: Edge = self.get_edge(node, adj_node.name)
+    #                if edge not in labels:
+    #                    w: int = adj_node.name
+    #                    if w not in visited:
+    #                        labels.append(edge)
+    #                        visited[w] = True
+    #                        levels[current_level + 1].append(w)
+    #                    else:
+    #                        return True
+    #        current_level += 1
+    #    return False
 
-        while len(levels[current_level]) != 0:
-            levels.append([])
-            for node in levels[current_level]:
-                for adj_node in self.get_node_edges(node):
-                    edge: Edge = self.get_edge(node, adj_node.name)
-                    if edge not in labels:
-                        w: int = adj_node.name
-                        if w not in visited:
-                            labels.append(edge)
-                            visited[w] = True
-                            levels[current_level + 1].append(w)
-                        else:
-                            return True
-            current_level += 1
+    def is_cyclic(self, start:int):
+        
+        visited = [False]*(self.n)
+        
+        for i in range(self.n)
+        
+            if visited[i] == False:
+        
+                if(self.is_cyclic_rec(i,visited,-1)) == True:
+        
+                    return True
+
+    def is_cyclic_rec(self,w,visited,parent):
+        
+        visited[w] = True
+        
+        for i in self.adjacency_list[w]
+        
+            if visited[i] == False :
+        
+                if(self.is_cyclic_rec(i,visited,w)):
+        
+                    return True
+        
+            else if  parent != i :
+        
+                return True
+         
         return False
-
+        
 
 
 def graph_from_file(path: str) -> Graph:
