@@ -271,7 +271,7 @@ class Graph:
 
     def is_cyclic(self, start: int):
         visited: Dict[int, bool] = {start: True}
-        levels: Dict[int, List[int]] = {0: [start]}
+        levels: List[List[int]] = [[start]]
         labels: List[Edge] = []
 
         current_level: int = 0
