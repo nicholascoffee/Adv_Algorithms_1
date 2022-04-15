@@ -308,7 +308,7 @@ class Graph:
         
         visited[w] = True
         
-        for i in self.adjacency_list[w]
+        for i in self.adjacency_list[w]:
         
             if visited[i] == False :
         
