@@ -296,9 +296,9 @@ class Graph:
 
     def is_cyclic(self, start:int):
         
-        visited = [False]*(self.n)
+        visited = [False]*(self.n+1)
         
-        for i in range(1, self.n + 1):
+        for i in self.adjacency_list:
         
             if visited[i] == False:
         
