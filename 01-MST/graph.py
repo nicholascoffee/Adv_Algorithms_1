@@ -312,7 +312,7 @@ class Graph:
         
         for i in self.adjacency_list[w]:
         
-            if visited[i] == False :
+            if visited[i.name] == False :
         
                 if(self.is_cyclic_rec(i,visited,w)):
         
