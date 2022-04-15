@@ -298,7 +298,7 @@ class Graph:
         
         visited = [False]*(max(self.adjacency_list.keys()))
         
-        for i in self.adjacency_list:
+        for i,v in self.adjacency_list.items():
         
             if visited[i] == False:
         
