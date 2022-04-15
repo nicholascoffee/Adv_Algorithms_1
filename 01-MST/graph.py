@@ -296,7 +296,7 @@ class Graph:
         
         visited = [False]*(self.n)
         
-        for i in range(self.n)
+        for i in range(self.n):
         
             if visited[i] == False:
         
