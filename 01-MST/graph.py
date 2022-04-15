@@ -277,7 +277,7 @@ class Graph:
         current_level: int = 0
 
         while len(levels[current_level]) != 0:
-            levels[current_level + 1] = []
+            levels.append([])
             for node in levels[current_level]:
                 for adj_node in self.get_node_edges(node):
                     edge: Edge = self.get_edge(node, adj_node.name)
