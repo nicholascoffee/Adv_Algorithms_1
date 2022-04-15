@@ -296,7 +296,7 @@ class Graph:
 
     def is_cyclic(self, start:int):
         
-        visited = [False]*(max(self.adjacency_list.keys()))
+        visited = [False]*(max(self.adjacency_list.keys()) + 1)
         
         for i,v in self.adjacency_list.items():
         
