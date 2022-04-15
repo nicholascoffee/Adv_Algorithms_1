@@ -308,13 +308,13 @@ class Graph:
 
     def is_cyclic_rec(self,w,visited,parent):
         
-        visited[w.name] = True
+        visited[w] = True
         
         for i in self.adjacency_list[w]:
         
             if visited[i.name] == False :
         
-                if(self.is_cyclic_rec(i,visited,w)):
+                if(self.is_cyclic_rec(i.name,visited,w)):
         
                     return True
         
