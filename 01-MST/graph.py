@@ -116,8 +116,10 @@ class Graph:
         # check if the nodes exist in the adjacency list dictionary
         if a not in self.adjacency_list:
             self.adjacency_list[a] = []
+            self.n += 1
         if b not in self.adjacency_list:
             self.adjacency_list[b] = []
+            self.n += 1
 
         if a != b:  # since we are working with simple graphs, we do not allow self loops
             existing_edge: Optional[Edge] = self.get_edge(a, b)
