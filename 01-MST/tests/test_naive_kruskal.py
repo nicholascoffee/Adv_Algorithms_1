@@ -1,4 +1,5 @@
 import unittest
+from time import perf_counter
 from typing import TextIO
 from unittest import TestCase
 
@@ -8,15 +9,14 @@ import parser
 from graph import Graph, graph_from_file
 from naive_kruskal import naive_kruskal
 
-
-def sum_weights(graph: Graph):  # TODO remove from here
-    result: int = 0
-    for edge in graph.get_all_edges():
-        result += edge.weight
-    return result
+tot_time = 0
+tot_count = 0
 
 
 class TestNaiveKruskal(TestCase):
+    def __init__(self, a):
+        super().__init__(a)
+
     @parameterized.expand(
         ['random_10_40.txt', 'random_11_40.txt', 'random_12_40.txt', 'random_13_80.txt', 'random_14_80.txt',
          'random_15_80.txt', 'random_16_80.txt', 'random_17_100.txt', 'random_18_100.txt', 'random_19_100.txt',
@@ -29,13 +29,24 @@ class TestNaiveKruskal(TestCase):
          'random_47_8000.txt', 'random_48_8000.txt', 'random_49_10000.txt', 'random_4_10.txt', 'random_50_10000.txt',
          'random_5_20.txt', 'random_6_20.txt', 'random_7_20.txt', 'random_8_20.txt', 'random_9_40.txt'])
     def test_naive_kruskal(self, file):
+        global tot_time
+        global tot_count
+
+        print(tot_count)
         graph: Graph = graph_from_file("dataset/input_" + file)
 
+        start = perf_counter()
         # ----------  algorithm call  ----------
         mst: Graph = naive_kruskal(graph)
         ########################################
+        end = perf_counter()
 
-        result: int = sum_weights(mst)
+        tot_time += (end - start)
+        tot_count += 1
+
+        print(tot_time / tot_count)
+
+        result: int = mst.sum_weights()
 
         file: TextIO = open("dataset/output_" + file)
         th_result: int = int(file.readline())

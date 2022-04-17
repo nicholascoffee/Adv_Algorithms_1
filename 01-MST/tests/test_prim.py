@@ -9,13 +9,6 @@ from graph import Graph, graph_from_file
 from prim import prim
 
 
-def sum_weights(graph: Graph):
-    result: int = 0
-    for edge in graph.get_all_edges():
-        result += edge.weight
-    return result
-
-
 class TestPrim(TestCase):
     @parameterized.expand(
         ['random_10_40.txt', 'random_11_40.txt', 'random_12_40.txt', 'random_13_80.txt', 'random_14_80.txt',
@@ -35,7 +28,7 @@ class TestPrim(TestCase):
         mst: Graph = prim(graph, 1)
         ########################################
 
-        result: int = sum_weights(mst)
+        result: int = mst.sum_weights()
 
         file: TextIO = open("dataset/output_" + file)
         th_result: int = int(file.readline())

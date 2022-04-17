@@ -203,6 +203,17 @@ class Graph:
         return None
 
     def remove_edge(self, a: int, b: int):  # TODO fix
+        """
+        Removes an edge from the graph
+
+        Parameters
+        ----------
+        a : int
+            first node name
+        b :
+            second node name
+
+        """
         a_adj_list = self.get_node_edges(a)
         b_adj_list = self.get_node_edges(b)
 
@@ -270,60 +281,60 @@ class Graph:
             raise Exception("Edge not found")
 
         return edge.weight
-    
-    #def is_cyclic(self, start: int):
-    #    visited: Dict[int, bool] = {start: True}
-    #    levels: List[List[int]] = [[start]]
-    #    labels: List[Edge] = []
 
-    #    current_level: int = 0
+    def is_cyclic(self, starting_node: int) -> bool:
+        """
+        Returns true if the graph is cyclic, otherwise false
 
-    #    while len(levels[current_level]) != 0:
-    #        levels.append([])
-    #        for node in levels[current_level]:
-    #            for adj_node in self.get_node_edges(node):
-    #                edge: Edge = self.get_edge(node, adj_node.name)
-    #                if edge not in labels:
-    #                    w: int = adj_node.name
-    #                    if w not in visited:
-    #                        labels.append(edge)
-    #                        visited[w] = True
-    #                        levels[current_level + 1].append(w)
-    #                    else:
-    #                        return True
-    #        current_level += 1
-    #    return False
+        Parameters
+        ----------
+        starting_node : int
+            the node name on which start the analysis
 
-    def is_cyclic(self, start:int):
-        
-        visited = [False]*(max(self.adjacency_list.keys()) + 1)
-        
-        for i,v in self.adjacency_list.items():
-        
-            if visited[i] == False:
-        
-                if(self.is_cyclic_rec(i,visited,-1)) == True:
-        
-                    return True
+        Returns
+        -------
+        bool
+            if the graph is cyclic or not
+        """
+        visited_nodes: Dict[int, bool] = {}
+        visited_edges: Dict[(int, int), bool] = {}
+        nodes_to_visit: List[int] = [starting_node]  # nodes to visit in CURRENT level
 
-    def is_cyclic_rec(self,w,visited,parent):
-        
-        visited[w] = True
-        
-        for i in self.adjacency_list[w]:
-        
-            if visited[i.name] == False :
-        
-                if(self.is_cyclic_rec(i.name,visited,w)):
-        
-                    return True
-        
-            elif  parent != i :
-        
-                return True
-         
+        while len(nodes_to_visit) > 0:
+            future_level: List[int] = []
+            for node_name in nodes_to_visit:
+                adj_nodes: List[AdjacencyNode] = self.get_node_edges(node_name)
+
+                if visited_nodes.get(node_name):
+                    return True  # non è ciclico
+
+                visited_nodes[node_name] = True
+
+                for adj_node in adj_nodes:  # per ogni nodo adiacente
+                    if not visited_edges.get((node_name, adj_node.name)):
+                        # non ho mai attraversato questo arco (essendo un grafo non diretto ne ho 2 per ogni coppia)
+                        # li metto entrambi per non dover controllare gli opposti ogni volta
+                        visited_edges[(adj_node.name, node_name)] = True
+                        # sono arrivato ad un nodo da un arco mai visitato, se è davvero ciclico, non dovrei averlo
+                        # già visitato
+                        future_level.append(adj_node.name)
+
+                nodes_to_visit = future_level
         return False
-        
+
+    def sum_weights(self) -> int:
+        """
+        Returns the sum of all edges
+
+        Returns
+        -------
+        int
+            sum of all edges
+        """
+        result: int = 0
+        for edge in self.get_all_edges():
+            result += edge.weight
+        return result
 
 
 def graph_from_file(path: str) -> Graph:
