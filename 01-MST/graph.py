@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import parser
 
@@ -217,17 +217,17 @@ class Graph:
         a_adj_list = self.get_node_edges(a)
         b_adj_list = self.get_node_edges(b)
 
-        for i in range(len(a_adj_list)):
-            if a_adj_list[i].name == b:
-                del a_adj_list[i]
+        for a_index in range(len(a_adj_list)):
+            if a_adj_list[a_index].name == b:
+                del a_adj_list[a_index]
                 break
-        for i in range(len(b_adj_list)):
-            if b_adj_list[i].name == a:
-                del b_adj_list[i]
+        for b_index in range(len(b_adj_list)):
+            if b_adj_list[b_index].name == a:
+                del b_adj_list[b_index]
                 break
-        for i in range(len(self.edges)):
-            if self.edges[i].connect(a, b):
-                del self.edges[i]
+        for e_index in range(len(self.edges)):
+            if self.edges[e_index].connect(a, b):
+                del self.edges[e_index]
                 break
 
     def get_node_edges(self, node_name: int) -> List[AdjacencyNode]:
@@ -297,7 +297,7 @@ class Graph:
             if the graph is cyclic or not
         """
         visited_nodes: Dict[int, bool] = {}
-        visited_edges: Dict[(int, int), bool] = {}
+        visited_edges: Dict[Tuple[int, int], bool] = {}
         nodes_to_visit: List[int] = [starting_node]  # nodes to visit in CURRENT level
 
         while len(nodes_to_visit) > 0:
@@ -312,11 +312,12 @@ class Graph:
 
                 for adj_node in adj_nodes:  # per ogni nodo adiacente
                     if not visited_edges.get((node_name, adj_node.name)):
-                        # non ho mai attraversato questo arco (essendo un grafo non diretto ne ho 2 per ogni coppia)
+                        # non ho mai attraversato questo arco
+                        # (essendo un grafo non diretto ne ho 2 per ogni coppia)
                         # li metto entrambi per non dover controllare gli opposti ogni volta
                         visited_edges[(adj_node.name, node_name)] = True
-                        # sono arrivato ad un nodo da un arco mai visitato, se è davvero ciclico, non dovrei averlo
-                        # già visitato
+                        # sono arrivato ad un nodo da un arco mai visitato, se è davvero ciclico,
+                        # non dovrei averlo già visitato
                         future_level.append(adj_node.name)
 
                 nodes_to_visit = future_level

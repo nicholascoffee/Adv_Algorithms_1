@@ -37,7 +37,7 @@ def naive_kruskal(graph: Graph) -> Graph:
         Minimum Spanning Tree graph based on the input graph
     """
     # empty graph to return with the solution
-    mst_graph: graph = Graph(0)
+    mst_graph: Graph = Graph(0)
 
     # sorting the edges in crescent order
     edges: List[Edge] = sort_edges(graph)
@@ -48,7 +48,8 @@ def naive_kruskal(graph: Graph) -> Graph:
         b: int = edge.b
         weight: int = edge.weight
 
-        # add in the new graph if the graph created is still acyclic, else continue with the next ndoes
+        # add in the new graph if the graph created is still acyclic,
+        # else continue with the next nodes
         mst_graph.add_edge(a, b, weight)
         if mst_graph.is_cyclic(a):
             mst_graph.remove_edge(a, b)
