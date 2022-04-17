@@ -217,16 +217,16 @@ class Graph:
         a_adj_list = self.get_node_edges(a)
         b_adj_list = self.get_node_edges(b)
 
-        for a_index in range(len(a_adj_list)):
-            if a_adj_list[a_index].name == b:
+        for a_index, a_node in enumerate(a_adj_list):
+            if a_node.name == b:
                 del a_adj_list[a_index]
                 break
-        for b_index in range(len(b_adj_list)):
-            if b_adj_list[b_index].name == a:
+        for b_index, b_node in enumerate(b_adj_list):
+            if b_node.name == a:
                 del b_adj_list[b_index]
                 break
-        for e_index in range(len(self.edges)):
-            if self.edges[e_index].connect(a, b):
+        for e_index, edge in enumerate(self.edges):
+            if edge.connect(a, b):
                 del self.edges[e_index]
                 break
 
