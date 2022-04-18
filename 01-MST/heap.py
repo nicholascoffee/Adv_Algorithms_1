@@ -20,8 +20,15 @@ class HeapNode:
     def __lt__(self, other):
         return self.key < other.key
 
+    def __gt__(self, other):
+        return self.key > other.key
+
     def __eq__(self, other):
         return self.name == other.name
+
+
+def _parent(index: int) -> int:
+    return (index - 1) // 2
 
 
 @dataclass
@@ -67,9 +74,22 @@ class Heap:
         else:
             return index, self.heap[index]
 
-    def remove(self, i: int):
-        self.heap[i] = self.heap[-1]
-        self.heap.pop()
-        if i < len(self.heap):
-            heapq._siftup(self.heap, i)
-            heapq._siftdown(self.heap, 0, i)
+    def value_decreased(self, index):
+        if index == 0:
+            return
+
+        parent: int = _parent(index)
+        # alread changed, need balance, sono SICURO che il
+        while index > 0 and self.heap[parent] > self.heap[index]:
+            self.heap[index], self.heap[parent] = self.heap[parent], self.heap[index]
+            index = parent
+            if index != 0:
+                parent: int = _parent(index)
+
+    def build_graph(self) -> Graph:
+        graph: Graph = Graph(0)
+
+        for node in self.nodes.values():
+            if node.parent != -1:
+                graph.add_edge(node.name, node.parent, node.key)
+        return graph
