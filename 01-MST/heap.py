@@ -71,15 +71,13 @@ class Heap:
 
         if index == -1:
             return -1, None
-        else:
-            return index, self.heap[index]
+
+        return index, self.heap[index]
 
     def value_decreased(self, index):
         if index == 0:
             return
-
         parent: int = _parent(index)
-        # alread changed, need balance, sono SICURO che il
         while index > 0 and self.heap[parent] > self.heap[index]:
             self.heap[index], self.heap[parent] = self.heap[parent], self.heap[index]
             index = parent
