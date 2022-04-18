@@ -1,9 +1,10 @@
 import heapq
 import sys
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Optional, Tuple
 
 from graph import Graph
+from heap import Heap
 
 
 @dataclass
@@ -34,33 +35,26 @@ def build_graph(l_list: Dict[int, HeapNode]) -> Graph:
 
 
 def prim(graph: Graph, starting_node: int = 1) -> Graph:
-    nodes: Dict[int, HeapNode] = {}
-    heap: List[HeapNode] = []
+    heap: Heap = Heap()
+    heap.init_nodes(graph, starting_node)
 
-    for node in graph.get_all_nodes():
-        nodes[node] = HeapNode(node, sys.maxsize, -1)
+    while not heap.is_empty():
 
-    nodes[starting_node].key = 0
-
-    for v in nodes.values():
-        heapq.heappush(heap, v)
-
-    while len(heap) != 0:
-        heapq.heapify(heap)
-
-        u: HeapNode = heapq.heappop(heap)
+        u: HeapNode = heap.pop()
 
         for n in graph.get_node_edges(u.name):
 
-            if n in heap:
-                tmp: HeapNode = nodes[n.name]
+            index, tmp = heap.get(n.name)
 
-                heap.remove(tmp)
+            if tmp is not None:
+
+                heap.remove(index)
 
                 candidate_weight: int = graph.get_weight(u.name, tmp.name)
                 if candidate_weight < tmp.key:
                     tmp.key = graph.get_weight(u.name, tmp.name)
                     tmp.parent = u.name
 
-                heapq.heappush(heap, tmp)
-    return build_graph(nodes)
+                heap.push(tmp)
+
+    return build_graph(heap.nodes)
