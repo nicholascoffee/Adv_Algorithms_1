@@ -15,8 +15,12 @@ class Analysis:
         self.size = size
         self.time = time
 
+    def __lt__(self, other):
+        return self.size < self.size
+
 
 MSTAlgorithm = Callable[[Graph], Graph]
+ComplexityFunction = Callable[[int], float]
 
 
 def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> float:
@@ -32,40 +36,45 @@ def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> floa
 
 
 def measure_run_times(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
-    data: Dict[Tuple[int, int], List[float]] = {}
+    data: Dict[int, List[float]] = {}
 
     files: List[str] = os.listdir("dataset")
 
     for file in files:
+        print("init " + file)
         graph: Graph = graph_from_file("dataset/" + file)
         estimate_time = run_algorithm(graph, algorithm, num_calls)
 
-        size: Tuple[int, int] = (graph.n, graph.m)
+        size: int = graph.n
 
         if not (size in data):
             data[size] = []
 
         data[size].append(estimate_time)
 
-    avg_results: Dict[Tuple[int, int], float] = {}
+    avg_results: Dict[int, float] = {}
     for key in data.keys():
         avg_results[key] = sum(data[key]) / len(data[key])
 
-    sizes = list(avg_results.keys())
-    sizes.sort() # TODO
-
     analysis: List[Analysis] = []
 
-    for i in sizes:
-        analysis.append(Analysis(i, avg_results[i])) # TODO
+    for key, value in avg_results.items():
+        analysis.append(Analysis(key, value))
 
+    analysis.sort(key=lambda i: i.size)
+    print(analysis)
     return analysis
 
 
-def run_analysis(algorithm: MSTAlgorithm, num_calls: int = 1000):
+def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction, num_calls: int = 1):
     analysis: List[Analysis] = measure_run_times(algorithm, num_calls)
 
     ratios: List[Optional[float]] = [0.0] + \
                                     [round(analysis[i + 1].time / analysis[i].time, 3) for i in
                                      range(len(analysis) - 1)]
-    c_estimates = [round(analysis[i].time / analysis[i].size, 3) for i in range(len(analysis))]
+    c_estimates = [round(analysis[i].time / complexity_function(analysis[i].size), 3) for i in range(len(analysis))]
+    print("Size\tTime(ns)\t\t\t\tCostant\t\t\t\t\tRatio")
+    print(50 * "-")
+    for i in range(len(analysis)):
+        print(analysis[i].size, round(analysis[i].time, 2), '', c_estimates[i], '', ratios[i], sep="\t\t")
+    print(50 * "-")
