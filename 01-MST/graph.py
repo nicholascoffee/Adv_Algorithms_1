@@ -337,7 +337,6 @@ class Graph:
             result += edge.weight
         return result
 
-
 def graph_from_file(path: str) -> Graph:
     """
     Load the graph from a file
