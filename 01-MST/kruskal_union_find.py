@@ -11,14 +11,14 @@ def build_graph(edges: List[Edge]) -> Graph:
 
 
 def kruskalUnionFind(graph: Graph) -> Graph:
-    A: List[Edge] = []
-    UF: UnionFindSet = UnionFindSet()
+    result: List[Edge] = []
+    union_find: UnionFindSet = UnionFindSet()
     for node in graph.get_all_nodes().keys():
-        UF.make(node)
+        union_find.make(node)
     edges: List[Edge] = graph.get_all_edges()
     edges.sort(key=lambda e: e.weight)
     for edge in edges:
-        if UF.find(edge.a) != UF.find(edge.b):
-            A.append(edge)
-            UF.union(edge.a, edge.b)
-    return build_graph(A)
+        if union_find.find(edge.a) != union_find.find(edge.b):
+            result.append(edge)
+            union_find.union(edge.a, edge.b)
+    return build_graph(result)
