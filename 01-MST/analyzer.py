@@ -1,7 +1,8 @@
-import gc, os
+import gc
+import os
 from dataclasses import dataclass
 from time import perf_counter_ns
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional
 
 from graph import Graph, graph_from_file
 
@@ -47,14 +48,14 @@ def measure_run_times(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]
 
         size: int = graph.n
 
-        if not (size in data):
+        if size not in data:
             data[size] = []
 
         data[size].append(estimate_time)
 
     avg_results: Dict[int, float] = {}
-    for key in data.keys():
-        avg_results[key] = sum(data[key]) / len(data[key])
+    for key, item in data.items():
+        avg_results[key] = sum(item) / len(item)
 
     analysis: List[Analysis] = []
 
@@ -66,15 +67,19 @@ def measure_run_times(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]
     return analysis
 
 
-def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction, num_calls: int = 1):
+def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction,
+                 num_calls: int = 1):
     analysis: List[Analysis] = measure_run_times(algorithm, num_calls)
 
     ratios: List[Optional[float]] = [0.0] + \
                                     [round(analysis[i + 1].time / analysis[i].time, 3) for i in
                                      range(len(analysis) - 1)]
-    c_estimates = [round(analysis[i].time / complexity_function(analysis[i].size), 3) for i in range(len(analysis))]
+    c_estimates = [round(analysis[i].time / complexity_function(analysis[i].size), 3)
+                   for i in range(len(analysis))]
     print("Size\tTime(ns)\t\t\t\tCostant\t\t\t\t\tRatio")
     print(50 * "-")
-    for i in range(len(analysis)):
-        print(analysis[i].size, round(analysis[i].time, 2), '', c_estimates[i], '', ratios[i], sep="\t\t")
+    for index, item in enumerate(analysis):
+        print(item.size, round(item.time, 2), '',
+              c_estimates[index], '', ratios[index], sep="\t\t")
+
     print(50 * "-")
