@@ -1,65 +1,28 @@
-import heapq
-import sys
-from dataclasses import dataclass
-from typing import List, Dict
-
 from graph import Graph
+from heap import Heap, HeapNode
 
 
-@dataclass
-class HeapNode:
-    name: int
-    key: int
-    parent: int
+def prim(graph: Graph, starting_node: int = 1) -> Graph:
+    heap: Heap = Heap()
+    heap.init_nodes(graph, starting_node)
 
-    def __init__(self, name, key, parent):
-        self.name = name
-        self.key = key
-        self.parent = parent
+    while not heap.is_empty():
 
-    def __lt__(self, other):
-        return self.key < other.key
-
-    def __eq__(self, other):
-        return self.name == other.name
-
-
-def build_graph(l_list: Dict[int, HeapNode]) -> Graph:
-    graph: Graph = Graph(0)
-
-    for node in l_list.values():
-        if node.parent != -1:
-            graph.add_edge(node.name, node.parent, node.key)
-    return graph
-
-
-def prim(graph: Graph, starting_node: int) -> Graph:
-    nodes: Dict[int, HeapNode] = {}
-    heap: List[HeapNode] = []
-
-    for node in graph.get_all_nodes():
-        nodes[node] = HeapNode(node, sys.maxsize, -1)
-
-    nodes[starting_node].key = 0
-
-    for v in nodes.values():
-        heapq.heappush(heap, v)
-
-    while len(heap) != 0:
-        heapq.heapify(heap)
-        u: HeapNode = heapq.heappop(heap)
+        u: HeapNode = heap.pop()
 
         for n in graph.get_node_edges(u.name):
 
-            if n in heap:
-                tmp: HeapNode = nodes[n.name]
+            index, tmp = heap.get(n.name)
 
-                heap.remove(tmp)
+            if tmp is not None:
 
                 candidate_weight: int = graph.get_weight(u.name, tmp.name)
+
                 if candidate_weight < tmp.key:
-                    tmp.key = graph.get_weight(u.name, tmp.name)
+
+                    tmp.key = candidate_weight
                     tmp.parent = u.name
 
-                heapq.heappush(heap, tmp)
-    return build_graph(nodes)
+                    heap.value_decreased(index)
+
+    return heap.build_graph()
