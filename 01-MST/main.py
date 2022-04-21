@@ -2,11 +2,13 @@ import math
 from typing import Tuple
 
 from analyzer import run_analysis, Analysis
+from kruskal_union_find import kruskal_union_find
+from naive_kruskal import naive_kruskal
 from prim import prim
 
 
-def mlogn(size: int) -> float:
-    return math.log2(size)
+def mlogn(size: Tuple[int, int]) -> float:
+    return size[1] * math.log2(size[0])
 
 
 def main():

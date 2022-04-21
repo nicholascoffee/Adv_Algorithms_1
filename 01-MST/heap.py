@@ -74,7 +74,7 @@ class Heap:
 
         return index, self.heap[index]
 
-    def value_decreased(self, index):
+    def value_decreased(self, index):  # TODO riguardare sta cosa
         if index == 0:
             return
         parent: int = _parent(index)

@@ -86,9 +86,9 @@ class Graph:
     n: int
     m: int
 
-    def __init__(self, n: int):
+    def __init__(self, n: int = 0, m: int = 0):
         self.n = n
-        self.m = 0
+        self.m = m
 
         self.adjacency_list = {}
         self.edges = []
@@ -356,7 +356,7 @@ def graph_from_file(path: str) -> Graph:
 
 
 def _graph_from_content(content: Content) -> Graph:
-    graph: Graph = Graph(content.n)
+    graph: Graph = Graph()
     for a, b, weight in content.list_triple:
         graph.add_edge(a, b, weight)
 
