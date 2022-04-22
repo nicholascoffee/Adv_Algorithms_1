@@ -18,7 +18,6 @@ def sort_edges(graph: Graph) -> Dict[Tuple[int, int], int]:
     # https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
     return dict(sorted(graph.get_all_edges().items(), key=lambda item: item[1]))
 
-
 def naive_kruskal(graph: Graph) -> Graph:
     """
     Returns the Minimum Spanning Tree of the given graph using Naive Kruskal Algorithm
