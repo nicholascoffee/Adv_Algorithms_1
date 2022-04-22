@@ -1,7 +1,6 @@
 from typing import List, Dict, Tuple
-from graph import Edge, Graph
-from union_find import UnionFindSet
-
+from datastructure.graph import Edge, Graph
+from datastructure.union_find import UnionFindSet
 
 def sort_edges(graph: Graph) -> List[Edge]:
     """

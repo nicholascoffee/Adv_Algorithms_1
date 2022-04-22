@@ -1,7 +1,5 @@
-from typing import List, Dict, Tuple
-
-from graph import Graph, Edge
-
+from typing import Dict, Tuple
+from datastructure.graph import Graph
 
 def sort_edges(graph: Graph) -> Dict[Tuple[int, int], int]:
     """

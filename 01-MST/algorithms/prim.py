@@ -1,8 +1,5 @@
-from typing import Dict
-
-from graph import Graph
-from heap import Heap, HeapNode
-
+from datastructure.graph import Graph
+from datastructure.heap import Heap, HeapNode
 
 def prim(graph: Graph, starting_node: int = 1) -> Graph:
     heap: Heap = Heap()
