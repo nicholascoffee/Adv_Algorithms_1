@@ -5,14 +5,6 @@ from typing import List, TextIO
 from datastructure.graph import Edge, Graph, graph_from_file
 from algorithms.kruskal_union_find import kruskal_union_find
 
-
-def sum_weights(edges) -> int:
-    result: int = 0
-    for edge in edges:
-        result += edge.weight
-    return result
-
-
 class TestKruskalUnionFind(TestCase):
     @parameterized.expand(
         ['random_10_40.txt', 'random_11_40.txt', 'random_12_40.txt', 'random_13_80.txt', 'random_14_80.txt',
@@ -25,19 +17,19 @@ class TestKruskalUnionFind(TestCase):
          'random_42_4000.txt', 'random_43_4000.txt', 'random_44_4000.txt', 'random_45_8000.txt', 'random_46_8000.txt',
          'random_47_8000.txt', 'random_48_8000.txt', 'random_49_10000.txt', 'random_4_10.txt', 'random_50_10000.txt',
          'random_5_20.txt', 'random_6_20.txt', 'random_7_20.txt', 'random_8_20.txt', 'random_9_40.txt'])
+    
     def test_kuskal_union_find(self, file):
         graph: Graph = graph_from_file("dataset/input_" + file)
 
-        mst: List[Edge] = kruskal_union_find(graph)
+        mst: Graph = kruskal_union_find(graph)
 
-        result: int = sum_weights(mst)
+        result: int = mst.sum_weights()
 
         file: TextIO = open("dataset/output_" + file)
         th_result: int = int(file.readline())
         file.close()
 
         self.assertEqual(th_result, result)
-
 
 if __name__ == '__main__':
     unittest.main()
