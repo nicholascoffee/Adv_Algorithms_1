@@ -6,8 +6,8 @@ from unittest import TestCase
 from parameterized import parameterized
 
 import parser
-from graph import Graph, graph_from_file
-from naive_kruskal import naive_kruskal
+from datastructure.graph import Graph, graph_from_file
+from algorithms.naive_kruskal import naive_kruskal
 
 tot_time = 0
 tot_count = 0

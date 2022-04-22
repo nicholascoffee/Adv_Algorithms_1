@@ -5,8 +5,8 @@ from unittest import TestCase
 from parameterized import parameterized
 
 import parser
-from graph import Graph, graph_from_file
-from prim import prim
+from datastructure.graph import Graph, graph_from_file
+from algorithms.prim import prim
 
 
 class TestPrim(TestCase):
