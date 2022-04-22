@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Dict, Tuple
 
 from graph import Graph, Edge
 
 
-def sort_edges(graph: Graph) -> List[Edge]:
+def sort_edges(graph: Graph) -> Dict[Tuple[int, int], int]:
     """
     Returns the list of edges of the input graph in crescent order
 
@@ -14,12 +14,11 @@ def sort_edges(graph: Graph) -> List[Edge]:
 
     Returns
     -------
-    List[Edge]:
-        list of edges in crescent order
+    Dict[Tuple[int, int], int]:
+        dict of edges in crescent order
     """
-    edges: List[Edge] = graph.get_all_edges()
-    edges.sort()
-    return edges
+    # https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
+    return dict(sorted(graph.get_all_edges().items(), key=lambda item: item[1]))
 
 
 def naive_kruskal(graph: Graph) -> Graph:
@@ -37,20 +36,16 @@ def naive_kruskal(graph: Graph) -> Graph:
         Minimum Spanning Tree graph based on the input graph
     """
     # empty graph to return with the solution
-    mst_graph: Graph = Graph(0)
+    mst_graph: Graph = Graph()
 
     # sorting the edges in crescent order
-    edges: List[Edge] = sort_edges(graph)
+    edges: Dict[Tuple[int, int], int] = sort_edges(graph)
 
     # check for all the edges sorted the nodes
-    for edge in edges:
-        a: int = edge.a
-        b: int = edge.b
-        weight: int = edge.weight
-
+    for edge, weight in edges.items():
         # add in the new graph if the graph created is still acyclic,
         # else continue with the next nodes
-        mst_graph.add_edge(a, b, weight)
-        if mst_graph.is_cyclic(a):
-            mst_graph.remove_edge(a, b)
+        mst_graph.add_edge(edge[0], edge[1], weight)
+        if mst_graph.is_cyclic(edge[0]):
+            mst_graph.remove_edge(edge[0], edge[1])
     return mst_graph

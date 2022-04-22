@@ -6,7 +6,7 @@ from graph import Edge, Graph, graph_from_file
 from kruskal_union_find import kruskal_union_find
 
 
-def sum_weights(edges: List[Edge]) -> int:
+def sum_weights(edges) -> int:
     result: int = 0
     for edge in edges:
         result += edge.weight

@@ -1,9 +1,10 @@
 import gc
 import os
 from dataclasses import dataclass
-from time import perf_counter_ns
+from time import perf_counter_ns, perf_counter
 from typing import Callable, Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
+import numpy as np
 
 from graph import Graph, graph_from_file
 
@@ -42,8 +43,8 @@ def measure_run_times(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]
     files.sort()
     print(files)
     for i, file in enumerate(files):
-        if i == 40: # TODO rimuovi il blocco
-            break
+        if i > 40:  # TODO rimuovi il blocco
+            continue
         print("init " + file)
         graph: Graph = graph_from_file("dataset/" + file)
         estimate_time = run_algorithm(graph, algorithm, num_calls)
@@ -74,11 +75,14 @@ def plot(analysis: List[Analysis]):
     # TODO schifo
     d: Dict[int, List[float]] = {}
     avg: Dict[int, float] = {}
+    references = []
 
     for a in analysis:
         n_nodes = a.size[0]
         if n_nodes not in d:
             d[n_nodes] = []
+            references.append(2558.177 * a.size[1] * np.log2(n_nodes))
+
         d[n_nodes].append(a.time)
 
     for key, items in d.items():
@@ -90,6 +94,7 @@ def plot(analysis: List[Analysis]):
         times.append(item)
         sizes.append(key)
     plt.plot(sizes, times)
+    plt.plot(sizes, references)
     plt.show()
 
 
@@ -108,7 +113,7 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
     print(50 * "-")
     for index, item in enumerate(analysis):
         print(item.size, round(item.time, 2), '',
-              c_estimates[index]*10**-4, '', ratios[index], sep="\t\t")
+              c_estimates[index], '', ratios[index], sep="\t\t")
 
     print(50 * "-")
     plot(analysis)
