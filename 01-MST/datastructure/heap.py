@@ -1,8 +1,7 @@
 import sys
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from graph import Graph
-
+from datastructure.graph import Graph
 
 @dataclass
 class HeapNode:
