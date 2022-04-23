@@ -2,8 +2,9 @@ import unittest
 from unittest import TestCase
 from parameterized import parameterized
 from typing import List, TextIO
-from datastructure.graph import Edge, Graph, graph_from_file
+from datastructure.graph import Graph, graph_from_file
 from algorithms.kruskal_union_find import kruskal_union_find
+
 
 class TestKruskalUnionFind(TestCase):
     @parameterized.expand(
@@ -17,7 +18,6 @@ class TestKruskalUnionFind(TestCase):
          'random_42_4000.txt', 'random_43_4000.txt', 'random_44_4000.txt', 'random_45_8000.txt', 'random_46_8000.txt',
          'random_47_8000.txt', 'random_48_8000.txt', 'random_49_10000.txt', 'random_4_10.txt', 'random_50_10000.txt',
          'random_5_20.txt', 'random_6_20.txt', 'random_7_20.txt', 'random_8_20.txt', 'random_9_40.txt'])
-    
     def test_kuskal_union_find(self, file):
         graph: Graph = graph_from_file("dataset/input_" + file)
 
@@ -30,6 +30,7 @@ class TestKruskalUnionFind(TestCase):
         file.close()
 
         self.assertEqual(th_result, result)
+
 
 if __name__ == '__main__':
     unittest.main()

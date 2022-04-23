@@ -1,6 +1,7 @@
 from datastructure.graph import Graph
 from datastructure.heap import Heap, HeapNode
 
+
 def prim(graph: Graph, starting_node: int = 1) -> Graph:
     heap: Heap = Heap()
     heap.init_nodes(graph, starting_node)
@@ -18,6 +19,6 @@ def prim(graph: Graph, starting_node: int = 1) -> Graph:
 
                 if candidate_weight < tmp.key:
                     tmp.parent = u.name
-                    heap.update(tmp.index, candidate_weight)
+                    heap.update(heap.indexes[tmp.name], candidate_weight)
 
     return heap.build_graph()

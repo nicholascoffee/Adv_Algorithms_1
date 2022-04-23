@@ -4,7 +4,6 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-import parser
 from datastructure.graph import Graph, graph_from_file
 from algorithms.prim import prim
 

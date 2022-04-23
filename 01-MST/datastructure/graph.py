@@ -3,41 +3,8 @@ from typing import Dict, List, Optional, Tuple
 import parser
 from parser import Content
 
-@dataclass
-class Edge:
-    """
-    A class for representing the edge that connect two nodes and the respective weigh
-
-    Attributes
-    __________
-    a: int
-        first node endpoint
-    b: int
-        second node endpoint
-    weight: int
-        the costs for travelling from a to b and vice-versa
-
-    """
-
-    a: int
-    b: int
-    weight: int
-
-    def __init__(self, a: int, b: int, weight: int) -> None:
-        self.a = a
-        self.b = b
-        self.weight = weight
-
-    def __eq__(self, other):
-        return ((self.a == other.a and self.b == other.b)
-                or (self.a == other.b and self.b == other.a)) and self.weight == other.weight
-
-    def __lt__(self, other):
-        return self.weight < other.weight
-
-    def connect(self, a: int, b: int) -> bool:
-        return (self.a == a and self.b == b) or (self.a == b and self.b == a)
-
+Node = int
+Edges = Dict[Tuple[Node, Node], int]
 
 @dataclass
 class Graph:
@@ -48,19 +15,16 @@ class Graph:
     __________
     adjacency_list : Dict[int, List[AdjacencyNode]]
 
-    edges : List[Edge]
+    edges : Edges
 
     n : int
         number of nodes in the graph
-
     m : int
         number of edges in the graph
 
     """
     adjacency_list: Dict[int, Dict[int, int]]
-    edges: Dict[Tuple[int, int], int]
-
-    static_edges: List[Edge]
+    edges: Edges
 
     n: int
     m: int
@@ -71,7 +35,6 @@ class Graph:
 
         self.adjacency_list = {}
         self.edges = {}
-        self.static_edges = []
 
     def add_edge(self, a: int, b: int, weight: int) -> None:
         """
@@ -111,8 +74,6 @@ class Graph:
 
                 self.edges[(a, b)] = weight
 
-                self.static_edges.append(Edge(a, b, weight))
-
                 self.m += 1
             elif already_existing_weight > weight:
                 # there is an edge that connect a to b, so we just keep the lighter
@@ -143,12 +104,7 @@ class Graph:
 
         self.edges[(a, b)] = weight
 
-        for edge in self.static_edges:
-            if edge.connect(a, b):
-                edge.weight = weight
-                break
-
-    def get_all_edges(self) -> Dict[Tuple[int, int], int]:
+    def get_all_edges(self) -> Edges:
         """
         Returns all the edges in the graph
 
@@ -277,6 +233,18 @@ class Graph:
         for weight in self.get_all_edges().values():
             result += weight
         return result
+
+    def get_sorted_edges(self) -> Edges:
+        """
+        Returns the list of edges of the input graph in crescent order
+
+        Returns
+        -------
+        Dict[Tuple[int, int], int]:
+            dict of edges in crescent order
+        """
+        # https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
+        return dict(sorted(self.get_all_edges().items(), key=lambda item: item[1]))
 
 
 def graph_from_file(path: str) -> Graph:

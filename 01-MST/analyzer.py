@@ -1,5 +1,6 @@
 import gc
 import os
+import string
 from dataclasses import dataclass
 from time import perf_counter_ns
 from typing import Callable, Dict, List, Optional, Tuple
@@ -12,9 +13,10 @@ DATASET: List[str] = sorted(os.listdir("dataset"))
 
 # Type aliases
 Time = float
-DataGraph = Tuple[int, int] # for rappresent only number of nodes and number of edges
+DataGraph = Tuple[int, int]  # for represent only number of nodes and number of edges
 MSTAlgorithm = Callable[[Graph], Graph]
 ComplexityFunction = Callable[[Tuple[int, int]], Time]
+
 
 @dataclass
 class Analysis:
@@ -35,6 +37,7 @@ class Analysis:
     def __init__(self, data: Tuple[int, int], time: float):
         self.data = data
         self.time = time
+
 
 def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> Time:
     """
@@ -65,6 +68,7 @@ def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> Time
 
     return (end_time - start_time) / num_calls
 
+
 def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
     """
     Execute the given MST-algorithm, over all the graphs in the DATASET directory for the given number of calls
@@ -88,25 +92,27 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
     # Dict where to store the data of the grpahs and the average of avrage times
     avg_times: Dict[DataGraph, Time] = {}
 
-    # Executing the algorthim over all the graphs inside the DATASET
+    # Executing the algorithm over all the graphs inside the DATASET
     for i, file in enumerate(DATASET):
-        #------------------------#
-        # TODO rimuovi il blocco #
-        if i > 40:
-            continue
-        #------------------------#
 
-        #print("\rDone ", i)
+        print(str(i+1) + "/68")
 
         graph: Graph = graph_from_file("dataset/" + file)
-        estimate_time: Time = run_algorithm(graph, algorithm, num_calls)
+
+        # num calls decreases depending on the graph node number ^ 2
+        specific_num_calls = int(num_calls / (graph.n / 2)) + 1
+
+        print("Running with: " + str(specific_num_calls))
+        print()
+
+        estimate_time: Time = run_algorithm(graph, algorithm, specific_num_calls)
 
         # Create the data graph to use as key in the dict
         data: DataGraph = (graph.n, graph.m)
 
         # Check if the data graph is already in the dict, otherwise append the time
         if data not in times:
-            times[data] = [] 
+            times[data] = []
         times[data].append(estimate_time)
 
     # Compute the average of all the average times for every graphs.
@@ -120,33 +126,37 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
         analysis.append(Analysis(data=key, time=items))
     return analysis
 
-def plot(analysis: List[Analysis]):
+
+def plot(analysis: List[Analysis], constant: float, complexity_function: ComplexityFunction, algorithm_name: string):
     # TODO schifo
     d: Dict[int, List[float]] = {}
     avg: Dict[int, float] = {}
     references = []
 
     for a in analysis:
-        n_nodes = a.size[0]
+        n_nodes = a.data[0]
         if n_nodes not in d:
             d[n_nodes] = []
-            references.append(2558.177 * a.size[1] * np.log2(n_nodes))
+            references.append(constant * complexity_function(a.data))
 
         d[n_nodes].append(a.time)
 
     for key, items in d.items():
-        avg[key] = sum(items)/len(items)
+        avg[key] = sum(items) / len(items)
 
     times = []
     sizes = []
     for key, item in avg.items():
         times.append(item)
         sizes.append(key)
+
+    plt.title(algorithm_name + " Algorithm")
     plt.plot(sizes, times)
     plt.plot(sizes, references)
     plt.show()
 
-def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction, num_calls: int = 1) -> None:
+
+def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction, algorithm_name: string, num_calls: int = 1) -> None:
     """
     Execute the given MST-algorithm for the given number of calls, measure the time of executiona and creates plots 
     comparing wiht the given complexity funciton.
@@ -166,7 +176,6 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
 
     """
     analysis: List[Analysis] = measure_time(algorithm, num_calls)
-
     ratios: List[Optional[float]] = [0.0]
     ratios += ([round(analysis[i + 1].time / analysis[i].time, 3) for i in range(len(analysis) - 1)])
 
@@ -175,9 +184,21 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
 
     print("Size\t\tTime(ns)\t\t\t\tConstant\t\t\t\t\tRatio")
     print(50 * "-")
+
+    results = []
+
     for index, item in enumerate(analysis):
         print(item.data, round(item.time, 2), '',
               c_estimates[index], '', ratios[index], sep="\t\t")
+        results.append((item.data, round(item.time, 2), c_estimates[index]))
+
+        # ----------
+
+        f = open(algorithm_name + ".txt", "w+")
+        f.write(str(results))
+        f.close()
+
+        # ----------
 
     print(50 * "-")
-    #plot(analysis)
+    # plot(analysis)

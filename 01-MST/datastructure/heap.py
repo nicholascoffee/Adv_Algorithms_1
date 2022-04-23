@@ -3,18 +3,17 @@ from dataclasses import dataclass
 from typing import List, Dict, Optional
 from datastructure.graph import Graph
 
+
 @dataclass
 class HeapNode:
     name: int
     key: int
-    index: int
     parent: int
 
     def __init__(self, name, key=0, parent=0):
         self.name = name
         self.key = key
         self.parent = parent
-        self.index = -1
 
     def __lt__(self, other):
         return self.key < other.key
@@ -45,10 +44,12 @@ def _parent(index: int) -> int:
 class Heap:
     heap: List[HeapNode]
     nodes: Dict[int, HeapNode]
+    indexes: Dict[int, int]
 
     def __init__(self):
         self.heap = []
         self.nodes = {}
+        self.indexes = {}
 
     def init_nodes(self, graph: Graph, starting_node: int):
         for node in graph.get_all_nodes():
@@ -87,8 +88,9 @@ class Heap:
         return self.size() - 1
 
     def swap(self, index1, index2):
-        self.heap[index1].index = index2
-        self.heap[index2].index = index1
+        self.indexes[self.heap[index1].name] = index2
+        self.indexes[self.heap[index2].name] = index1
+
         self.heap[index1], self.heap[index2] = self.heap[index2], self.heap[index1]
 
     def is_empty(self) -> bool:
@@ -96,7 +98,7 @@ class Heap:
 
     def push(self, node: HeapNode):
         self.heap.append(node)
-        node.index = self.last_index()
+        self.indexes[node.name] = self.last_index()
         self.sift_up(self.last_index())
 
     def get(self, node_index: int) -> HeapNode:
@@ -105,7 +107,7 @@ class Heap:
     def get_by_name(self, node_name: int) -> Optional[HeapNode]:
 
         node: HeapNode = self.nodes[node_name]
-        if node.index > self.last_index():
+        if self.indexes[node_name] > self.last_index():
             return None
         else:
             return node

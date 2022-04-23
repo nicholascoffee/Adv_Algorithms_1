@@ -5,7 +5,6 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-import parser
 from datastructure.graph import Graph, graph_from_file
 from algorithms.naive_kruskal import naive_kruskal
 

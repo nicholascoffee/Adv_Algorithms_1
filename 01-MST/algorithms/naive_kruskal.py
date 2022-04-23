@@ -1,22 +1,5 @@
-from typing import Dict, Tuple
-from datastructure.graph import Graph
+from datastructure.graph import Graph, Edges
 
-def sort_edges(graph: Graph) -> Dict[Tuple[int, int], int]:
-    """
-    Returns the list of edges of the input graph in crescent order
-
-    Parameters
-    ----------
-    graph : Graph
-        input graph
-
-    Returns
-    -------
-    Dict[Tuple[int, int], int]:
-        dict of edges in crescent order
-    """
-    # https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-    return dict(sorted(graph.get_all_edges().items(), key=lambda item: item[1]))
 
 def naive_kruskal(graph: Graph) -> Graph:
     """
@@ -36,7 +19,7 @@ def naive_kruskal(graph: Graph) -> Graph:
     mst_graph: Graph = Graph()
 
     # sorting the edges in crescent order
-    edges: Dict[Tuple[int, int], int] = sort_edges(graph)
+    edges: Edges = graph.get_sorted_edges()
 
     # check for all the edges sorted the nodes
     for edge, weight in edges.items():
