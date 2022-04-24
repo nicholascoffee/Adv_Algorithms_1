@@ -1,4 +1,5 @@
 import gc
+import math
 import os
 import string
 from dataclasses import dataclass
@@ -7,6 +8,9 @@ from typing import Callable, Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
+from algorithms.kruskal_union_find import kruskal_union_find
+from algorithms.naive_kruskal import naive_kruskal
+from algorithms.prim import prim
 from datastructure.graph import Graph, graph_from_file
 
 DATASET: List[str] = sorted(os.listdir("dataset"))
@@ -16,6 +20,14 @@ Time = float
 DataGraph = Tuple[int, int]  # for represent only number of nodes and number of edges
 MSTAlgorithm = Callable[[Graph], Graph]
 ComplexityFunction = Callable[[Tuple[int, int]], Time]
+
+
+def mlogn(size: Tuple[int, int]) -> float:
+    return size[1] * math.log2(size[0])
+
+
+def mn(size: Tuple[int, int]) -> float:
+    return size[1] * size[0]
 
 
 @dataclass
@@ -94,9 +106,9 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
     avg_times: Dict[DataGraph, Time] = {}
 
     # Executing the algorithm over all the graphs inside the DATASET
-    for i, file in enumerate(DATASET):
+    for file_number, file in enumerate(DATASET):
 
-        print(str(i+1) + "/68")
+        print(str(file_number + 1) + "/68")
 
         graph: Graph = graph_from_file("dataset/" + file)
 
@@ -129,20 +141,22 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
 
 
 def plot(analysis: List[Analysis], constant: float,
-         complexity_function: ComplexityFunction, algorithm_name: string):
-    d: Dict[int, List[float]] = {}
+         complexity_function: ComplexityFunction, algorithm_name: string,
+         complexity_function_name: string):
+
+    data: Dict[int, List[float]] = {}
     avg: Dict[int, float] = {}
     references = []
 
-    for a in analysis:
-        n_nodes = a.data[0]
-        if n_nodes not in d:
-            d[n_nodes] = []
-            references.append(constant * complexity_function(a.data))
+    for a_item in analysis:
+        n_nodes = a_item.data[0]
+        if n_nodes not in data:
+            data[n_nodes] = []
+            references.append(constant * complexity_function(a_item.data))
 
-        d[n_nodes].append(a.time)
+        data[n_nodes].append(a_item.time)
 
-    for key, items in d.items():
+    for key, items in data.items():
         avg[key] = sum(items) / len(items)
 
     times = []
@@ -152,16 +166,18 @@ def plot(analysis: List[Analysis], constant: float,
         sizes.append(key)
 
     plt.title(algorithm_name + " Algorithm")
-    plt.plot(sizes, times)
-    plt.plot(sizes, references)
+    plt.plot(sizes, times, label="Our implementation")
+    plt.plot(sizes, references, label=complexity_function_name)
+    plt.xlabel("Node number")
+    plt.ylabel("Time (ns)")
+    plt.legend()
     plt.show()
 
 
 def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction,
-                 algorithm_name: string, num_calls: int = 1) -> None:
+                 algorithm_name: string, num_calls: int = 1) -> List[Analysis]:
     """
-    Execute the given MST-algorithm for the given number of calls, measure the time of executiona and creates plots 
-    comparing wiht the given complexity funciton.
+    Execute the given MST-algorithm for the given number of calls, measure the time of execution
 
     Parameters
     ----------
@@ -175,7 +191,8 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
 
     Returns
     -------
-    None
+    List[Analysis]
+        result
 
     """
     analysis: List[Analysis] = measure_time(algorithm, num_calls)
@@ -204,4 +221,28 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
         # ----------
 
     print(50 * "-")
-    # plot(analysis)
+    return analysis
+
+
+def compare_plot(prim_analysis: List[Analysis], kruskal_union_find_analysis: List[Analysis],
+                 naive_kruskal_analysis: List[Analysis]):
+    plt.figure(1)
+    plot(prim_analysis, 2504.639, mlogn, "Prim", " c * (m * log2(n))")
+
+    plt.figure(2)
+    plot(kruskal_union_find_analysis, 524.839, mlogn, "Kruskal Union Find", " c * (m * log2(n))")
+
+    plt.figure(3)
+    plot(naive_kruskal_analysis, 524.839, mn, "Naive Kruskal", "c * (m * n)")
+
+
+def print_results():
+    with open("results.csv", "w") as results_file:
+        results_file.write("File,Prim,NaiveKruskal,KruskalUnionFind")
+        print("Prim\t\tKruskal Union Find\t\tNaive Kruskal")
+        for i, file in enumerate(DATASET):
+            graph: Graph = graph_from_file("dataset/" + file)
+            results = (file, 0, 0,
+                       naive_kruskal(graph).sum_weights())
+            print("%s\t\t%d\t\t%d\t\t\t%d" % results)
+            results_file.write("%s,%d,%d,%d\n" % results)
