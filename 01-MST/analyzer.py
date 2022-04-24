@@ -84,8 +84,9 @@ def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> Time
 
 def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
     """
-    Execute the given MST-algorithm, over all the graphs in the DATASET directory for the given number of calls
-    and return a sorted list of the graph and the average time of execution of the algorithm.
+    Execute the given MST-algorithm, over all the graphs in the DATASET directory for
+    the given number of calls and return a sorted list of the graph and the average
+    time of execution of the algorithm.
 
     Parameters
     ----------
@@ -197,7 +198,8 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
     """
     analysis: List[Analysis] = measure_time(algorithm, num_calls)
     ratios: List[Optional[float]] = [0.0]
-    ratios += ([round(analysis[i + 1].time / analysis[i].time, 3) for i in range(len(analysis) - 1)])
+    ratios += ([round(analysis[i + 1].time / analysis[i].time, 3)
+                for i in range(len(analysis) - 1)])
 
     c_estimates = [round(analysis[i].time / complexity_function(analysis[i].data), 3)
                    for i in range(len(analysis))]
@@ -214,9 +216,9 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
 
         # ----------
 
-        f = open(algorithm_name + ".txt", "w+")
-        f.write(str(results))
-        f.close()
+        f_result = open(algorithm_name + ".txt", "w+")
+        f_result.write(str(results))
+        f_result.close()
 
         # ----------
 
@@ -240,9 +242,9 @@ def print_results():
     with open("results.csv", "w") as results_file:
         results_file.write("File,Prim,NaiveKruskal,KruskalUnionFind")
         print("Prim\t\tKruskal Union Find\t\tNaive Kruskal")
-        for i, file in enumerate(DATASET):
+        for file in DATASET:
             graph: Graph = graph_from_file("dataset/" + file)
-            results = (file, 0, 0,
+            results = (file, prim(graph).sum_weights(), kruskal_union_find(graph).sum_weights(),
                        naive_kruskal(graph).sum_weights())
             print("%s\t\t%d\t\t%d\t\t\t%d" % results)
             results_file.write("%s,%d,%d,%d\n" % results)
