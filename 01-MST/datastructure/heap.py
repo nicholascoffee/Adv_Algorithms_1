@@ -124,6 +124,14 @@ class Heap:
         return self.size() - 1
 
     def swap(self, index1, index2):
+        """
+        Swap 2 nodes updating the indexes' dictionary
+        Parameters
+        ----------
+        index1
+        index2
+
+        """
         self.indexes[self.heap[index1].name] = index2
         self.indexes[self.heap[index2].name] = index1
 
@@ -133,6 +141,14 @@ class Heap:
         return len(self.heap) == 0
 
     def push(self, node: HeapNode):
+        """
+        Add a node in the heap
+        Parameters
+        ----------
+        node : HeapNode
+            input node
+
+        """
         self.heap.append(node)
         self.indexes[node.name] = self.last_index()
         self.sift_up(self.last_index())
@@ -141,7 +157,16 @@ class Heap:
         return self.heap[node_index]
 
     def get_by_name(self, node_name: int) -> Optional[HeapNode]:
+        """
+        Returns a HeapNode (if exists) by its name
+        Parameters
+        ----------
+        node_name : str
 
+        Returns
+        -------
+
+        """
         node: HeapNode = self.nodes[node_name]
         if self.indexes[node_name] > self.last_index():
             return None
@@ -149,7 +174,17 @@ class Heap:
         return node
 
     def get_min_child_index(self, node_index: int) -> int:
+        """
+        Returns the index of the minimum child of a given node
+        Parameters
+        ----------
+        node_index : int
+            input node
 
+        Returns
+        -------
+        Minimum child of the input node
+        """
         left_index = _left(node_index)
 
         if left_index > self.last_index():
@@ -167,6 +202,13 @@ class Heap:
         return right_index
 
     def pop(self) -> HeapNode:
+        """
+        Returns the minimum node in the heap and removes it from the heap
+        Returns
+        -------
+        HeapNode
+            minimum node in the heap
+        """
         if self.is_empty():
             raise Exception("Heap empty")
 
@@ -181,6 +223,14 @@ class Heap:
         return min_node
 
     def update(self, node_index: int, new_key: int):
+        """
+        Updates the key of a given node index
+        Parameters
+        ----------
+        node_index
+        new_key
+
+        """
         old_key = self.heap[node_index].key
         self.heap[node_index].key = new_key
 

@@ -6,6 +6,7 @@ from parser import Content
 Node = int
 Edges = Dict[Tuple[Node, Node], int]
 
+
 @dataclass
 class Graph:
     """
@@ -115,7 +116,7 @@ class Graph:
         """
         return self.edges
 
-    def remove_edge(self, a: int, b: int):  # TODO fix
+    def remove_edge(self, a: int, b: int):
         """
         Removes an edge from the graph
 

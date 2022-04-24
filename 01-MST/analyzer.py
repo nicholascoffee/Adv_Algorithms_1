@@ -1,7 +1,6 @@
 import gc
 import math
 import os
-import string
 from dataclasses import dataclass
 from time import perf_counter_ns
 from typing import Callable, Dict, List, Optional, Tuple
@@ -141,8 +140,8 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
 
 
 def plot(analysis: List[Analysis], constant: float,
-         complexity_function: ComplexityFunction, algorithm_name: string,
-         complexity_function_name: string):
+         complexity_function: ComplexityFunction, algorithm_name: str,
+         complexity_function_name: str):
 
     data: Dict[int, List[float]] = {}
     avg: Dict[int, float] = {}
@@ -175,7 +174,7 @@ def plot(analysis: List[Analysis], constant: float,
 
 
 def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction,
-                 algorithm_name: string, num_calls: int = 1) -> List[Analysis]:
+                 algorithm_name: str, num_calls: int = 1) -> List[Analysis]:
     """
     Execute the given MST-algorithm for the given number of calls, measure the time of execution
 

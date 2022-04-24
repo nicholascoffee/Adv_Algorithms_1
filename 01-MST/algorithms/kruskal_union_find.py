@@ -4,7 +4,8 @@ from datastructure.union_find import UnionFindSet
 
 def kruskal_union_find(graph: Graph) -> Graph:
     """
-    Returns the Minimum Spanning Tree of the given graph using Kruskal with Union Find (based on union-by-size)
+    Returns the Minimum Spanning Tree of the given graph using Kruskal with
+    Union Find (based on union-by-size)
 
     Parameters
     ----------
