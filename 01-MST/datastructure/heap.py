@@ -29,14 +29,50 @@ class HeapNode:
 
 
 def _left(index: int) -> int:
+    """
+    Returns the left child index of the input index
+    Parameters
+    ----------
+    index : int
+        input index
+
+    Returns
+    -------
+    int
+        index of the left child
+    """
     return index * 2 + 1
 
 
 def _right(index: int) -> int:
+    """
+    Returns the right child index of the input index
+    Parameters
+    ----------
+    index : int
+        input index
+
+    Returns
+    -------
+    int
+        index of the right child
+    """
     return index * 2 + 2
 
 
 def _parent(index: int) -> int:
+    """
+    Returns the parent node index of the input index
+    Parameters
+    ----------
+    index : int
+        input index
+
+    Returns
+    -------
+    int
+        index of the parent node
+    """
     return (index - 1) // 2
 
 
@@ -154,6 +190,15 @@ class Heap:
             self.sift_down(node_index)
 
     def build_graph(self) -> Graph:
+        """
+        Returns a Graph object from the heap
+
+        Returns
+        -------
+        Graph
+            the resulting graph
+
+        """
         graph: Graph = Graph(0)
 
         for node in self.nodes.values():
