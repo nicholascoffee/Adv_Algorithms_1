@@ -244,7 +244,7 @@ class Graph:
             dict of edges in crescent order
         """
         # https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value
-        return {k: v for k, v in sorted(self.get_all_edges().items(), key=lambda item: item[1])}
+        return dict(sorted(self.get_all_edges().items(), key=lambda item: item[1]))
 
 
 def graph_from_file(path: str) -> Graph:

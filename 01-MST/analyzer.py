@@ -29,7 +29,7 @@ class Analysis:
         a tuple storing the number of nodes and edges in the graph
 
     time : Time
-        a float rappresenting the time of execution
+        a float representing the time of execution
     """
     data: DataGraph
     time: Time
@@ -41,12 +41,13 @@ class Analysis:
 
 def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> Time:
     """
-    Execute the given MST-algorithm, over the given graph for the given number of calls, and return the average time of exectuion.
+    Execute the given MST-algorithm, over the given graph for the given number of calls,
+    and return the average time of execution.
 
     Parameters
     ----------
     graph : graph
-        is the graph in which the algorithm will be execute 
+        is the graph in which the algorithm will be executed
     algorithm : MSTAlgorithm
         is the algorithm to execute
     num_calls : int
@@ -83,7 +84,7 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
 
     Returns
     -------
-    A list composed by the data of the grahps and its average time of execution of the algorithm.
+    A list composed by the data of the graphs and its average time of execution of the algorithm.
 
     """
 
@@ -127,8 +128,8 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
     return analysis
 
 
-def plot(analysis: List[Analysis], constant: float, complexity_function: ComplexityFunction, algorithm_name: string):
-    # TODO schifo
+def plot(analysis: List[Analysis], constant: float,
+         complexity_function: ComplexityFunction, algorithm_name: string):
     d: Dict[int, List[float]] = {}
     avg: Dict[int, float] = {}
     references = []
@@ -156,13 +157,15 @@ def plot(analysis: List[Analysis], constant: float, complexity_function: Complex
     plt.show()
 
 
-def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction, algorithm_name: string, num_calls: int = 1) -> None:
+def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction,
+                 algorithm_name: string, num_calls: int = 1) -> None:
     """
     Execute the given MST-algorithm for the given number of calls, measure the time of executiona and creates plots 
     comparing wiht the given complexity funciton.
 
     Parameters
     ----------
+    algorithm_name
     algorithm : MSTAlgorithm
         is the algorithm to execute
     complexity_function : ComplexityFunction

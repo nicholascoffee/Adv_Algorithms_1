@@ -16,4 +16,4 @@ jobs:
       run: pip install mypy
 
     - name: Execute type checking
-      run: mypy .
+      run: mypy 01-MST/

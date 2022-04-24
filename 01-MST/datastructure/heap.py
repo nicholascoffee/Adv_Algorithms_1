@@ -109,8 +109,8 @@ class Heap:
         node: HeapNode = self.nodes[node_name]
         if self.indexes[node_name] > self.last_index():
             return None
-        else:
-            return node
+
+        return node
 
     def get_min_child_index(self, node_index: int) -> int:
 
@@ -127,8 +127,8 @@ class Heap:
 
         if self.heap[left_index] < self.heap[right_index]:
             return left_index
-        else:
-            return right_index
+
+        return right_index
 
     def pop(self) -> HeapNode:
         if self.is_empty():
