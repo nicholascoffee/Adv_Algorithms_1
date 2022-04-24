@@ -5,3 +5,11 @@ disable=deprecated-module,import-error
 
 [FORMAT]
 good-names=a,b,n,m,v,u,mn
+
+{
+    1: {2: 10, 3: 20}
+    2: {1: 10}
+    3: {1: 30}
+}
+
+

@@ -80,7 +80,8 @@ def run_algorithm(graph: Graph, algorithm: MSTAlgorithm, num_calls: int) -> Time
     return (end_time - start_time) / num_calls
 
 
-def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
+def measure_time(algorithm: MSTAlgorithm, num_calls: int,
+                 is_exponential: bool = False) -> List[Analysis]:
     """
     Execute the given MST-algorithm, over all the graphs in the DATASET directory for
     the given number of calls and return a sorted list of the graph and the average
@@ -92,7 +93,8 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
         is the algorithm to execute
     num_calls : int
         number of calls that must be make
-
+    is_exponential : bool
+        Indicate if the algorithm is exponential
     Returns
     -------
     A list composed by the data of the graphs and its average time of execution of the algorithm.
@@ -113,6 +115,12 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
 
         # num calls decreases depending on the graph node number ^ 2
         specific_num_calls = int(num_calls / (graph.n / 2)) + 1
+
+        if is_exponential:
+            if graph.n >= 20000:
+                specific_num_calls = 2
+            if graph.n >= 80000:
+                specific_num_calls = 1
 
         print("Running with: " + str(specific_num_calls))
         print()
@@ -141,8 +149,7 @@ def measure_time(algorithm: MSTAlgorithm, num_calls: int) -> List[Analysis]:
 
 def plot(analysis: List[Analysis], constant: float,
          complexity_function: ComplexityFunction, algorithm_name: str,
-         complexity_function_name: str):
-
+         complexity_function_name: str, plot_numer: int = 1):
     data: Dict[int, List[float]] = {}
     avg: Dict[int, float] = {}
     references = []
@@ -163,23 +170,23 @@ def plot(analysis: List[Analysis], constant: float,
     for key, item in avg.items():
         times.append(item)
         sizes.append(key)
-
+    plt.figure(plot_numer)
     plt.title(algorithm_name + " Algorithm")
     plt.plot(sizes, times, label="Our implementation")
     plt.plot(sizes, references, label=complexity_function_name)
     plt.xlabel("Node number")
     plt.ylabel("Time (ns)")
     plt.legend()
-    plt.show()
 
 
 def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunction,
-                 algorithm_name: str, num_calls: int = 1) -> List[Analysis]:
+                 algorithm_name: str, num_calls: int = 1, is_exponential: bool = False) -> List[Analysis]:
     """
     Execute the given MST-algorithm for the given number of calls, measure the time of execution
 
     Parameters
     ----------
+    is_exponential
     algorithm_name
     algorithm : MSTAlgorithm
         is the algorithm to execute
@@ -194,7 +201,7 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
         result
 
     """
-    analysis: List[Analysis] = measure_time(algorithm, num_calls)
+    analysis: List[Analysis] = measure_time(algorithm, num_calls, is_exponential)
     ratios: List[Optional[float]] = [0.0]
     ratios += ([round(analysis[i + 1].time / analysis[i].time, 3)
                 for i in range(len(analysis) - 1)])
@@ -202,38 +209,33 @@ def run_analysis(algorithm: MSTAlgorithm, complexity_function: ComplexityFunctio
     c_estimates = [round(analysis[i].time / complexity_function(analysis[i].data), 3)
                    for i in range(len(analysis))]
 
-    print("Size\t\tTime(ns)\t\t\t\tConstant\t\t\t\t\tRatio")
-    print(50 * "-")
+    with open(algorithm_name + ".csv", "w") as file:
+        file.write("Nodes,Edges,Time,Constants\n")
+        print("Size\t\tTime(ns)\t\t\t\tConstant\t\t\t\t\tRatio")
+        print(50 * "-")
 
-    results = []
+        results = []
 
-    for index, item in enumerate(analysis):
-        print(item.data, round(item.time, 2), '',
-              c_estimates[index], '', ratios[index], sep="\t\t")
-        results.append((item.data, round(item.time, 2), c_estimates[index]))
+        for index, item in enumerate(analysis):
+            file.write("%d,%d,%d,%d\n" % (item.data[0], item.data[1], round(item.time, 2),
+                                        c_estimates[index]))
+            print(item.data, round(item.time, 2), '',
+                  c_estimates[index], '', ratios[index], sep="\t\t")
+            results.append((item.data, round(item.time, 2), c_estimates[index]))
 
-        # ----------
-
-        f_result = open(algorithm_name + ".txt", "w+")
-        f_result.write(str(results))
-        f_result.close()
-
-        # ----------
-
-    print(50 * "-")
+        print(50 * "-")
     return analysis
 
 
 def compare_plot(prim_analysis: List[Analysis], kruskal_union_find_analysis: List[Analysis],
                  naive_kruskal_analysis: List[Analysis]):
-    plt.figure(1)
-    plot(prim_analysis, 2504.639, mlogn, "Prim", " c * (m * log2(n))")
+    plot(prim_analysis, 2504.639, mlogn, "Prim", " c * (m * log2(n))", 1)
 
-    plt.figure(2)
-    plot(kruskal_union_find_analysis, 524.839, mlogn, "Kruskal Union Find", " c * (m * log2(n))")
+    plot(kruskal_union_find_analysis, 524.839, mlogn, "Kruskal Union Find", " c * (m * log2(n))", 2)
 
-    plt.figure(3)
-    plot(naive_kruskal_analysis, 524.839, mn, "Naive Kruskal", "c * (m * n)")
+    plot(naive_kruskal_analysis, 524.839, mn, "Naive Kruskal", "c * (m * n)", 3)
+
+    plt.show()
 
 
 def print_results():
