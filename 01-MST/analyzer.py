@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from time import perf_counter_ns
 from typing import Callable, Dict, List, Optional, Tuple
 import matplotlib.pyplot as plt
-import numpy as np
 
 from algorithms.kruskal_union_find import kruskal_union_find
 from algorithms.naive_kruskal import naive_kruskal

@@ -93,7 +93,7 @@ class Heap:
 
         self.nodes[starting_node].key = 0
 
-        for index, heap_node in enumerate(self.nodes.values()):
+        for heap_node in self.nodes.values():
             self.push(heap_node)
 
     def sift_up(self, node_index):

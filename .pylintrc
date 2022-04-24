@@ -4,4 +4,4 @@ fail-under=9
 disable=deprecated-module,import-error
 
 [FORMAT]
-good-names=n,m,v,u,mn
+good-names=a,b,n,m,v,u,mn
