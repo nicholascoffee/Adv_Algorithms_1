@@ -1,7 +1,9 @@
 [MASTER]
 ignore=venv,tests,mypy.ini,README.md
 fail-under=9
-disable=deprecated-module
+disable=deprecated-module,import-error
 
 [FORMAT]
-good-names=a,b,n,m,v,u
+good-names=a,b,n,m,v,u,mn
+
+

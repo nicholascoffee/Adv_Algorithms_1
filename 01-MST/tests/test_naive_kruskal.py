@@ -5,9 +5,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-import parser
-from graph import Graph, graph_from_file
-from naive_kruskal import naive_kruskal
+from datastructure.graph import Graph, graph_from_file
+from algorithms.naive_kruskal import naive_kruskal
 
 tot_time = 0
 tot_count = 0
@@ -41,6 +40,8 @@ class TestNaiveKruskal(TestCase):
         ########################################
         end = perf_counter()
 
+        print(mst.edges)
+
         tot_time += (end - start)
         tot_count += 1
 
@@ -51,6 +52,7 @@ class TestNaiveKruskal(TestCase):
         file: TextIO = open("dataset/output_" + file)
         th_result: int = int(file.readline())
         file.close()
+
 
         self.assertEqual(th_result, result)
 

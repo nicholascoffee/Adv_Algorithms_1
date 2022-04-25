@@ -4,9 +4,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-import parser
-from graph import Graph, graph_from_file
-from prim import prim
+from datastructure.graph import Graph, graph_from_file
+from algorithms.prim import prim
 
 
 class TestPrim(TestCase):
@@ -28,13 +27,14 @@ class TestPrim(TestCase):
         mst: Graph = prim(graph, 1)
         ########################################
 
-        result: int = mst.sum_weights()
+        result = mst.sum_weights()
 
         file: TextIO = open("dataset/output_" + file)
         th_result: int = int(file.readline())
         file.close()
 
         self.assertEqual(th_result, result)
+
 
 
 if __name__ == '__main__':
