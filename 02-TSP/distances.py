@@ -4,11 +4,43 @@ from typing import Final
 RRR: Final = 6378.388
 
 def _coordinate_to_radian(coordinate: float) -> float:
+    """
+    Function to convert coordinate in radians
+
+    Parameters:
+    -----------
+    coordinate: float
+        is the coordinate to be converted
+
+    Returns:
+    --------
+    float
+        the coordinate express in radian
+    """
     degrees = int(coordinate)
     minutes = coordinate - degrees
     return math.radians(degrees + minutes * 5 / 3)
 
 def get_distance_geographic(latitude_1: float, longitude_1: float, latitude_2: float, longitude_2: float) -> int:
+    """
+    Given the coordinate of two nodes, the function returns the geographic distance of those nodes
+
+    Parameters:
+    -----------
+    latitude_1: float
+        is the latitude of the first point
+    longitude_1: float
+        is the longitude of the first point
+    latitude_2: float
+        is the latitude of the second point
+    longitude_2: float
+        is the longitude of the second point
+
+    Returns:
+    --------
+    int
+        the geographic distance between the two nodes
+    """
     # Convert coordinates into radians
     latitude_1 = _coordinate_to_radian(latitude_1)
     longitude_1 = _coordinate_to_radian(longitude_1)
@@ -23,17 +55,24 @@ def get_distance_geographic(latitude_1: float, longitude_1: float, latitude_2: f
     distance = RRR * math.acos(0.5 * ((1 + q1) * q2 - (1 - q1) * q3)) + 1
     return int(distance)
 
-def get_distance_euclidean(p_1: int, p_2: int, q_1: int, q_2: int) -> int:
+def get_distance_euclidean(x_1: float, y_1: float, x_2: float, y_2: float) -> int:
     """
-    Given the coordinate of two nodes, the function returns the distance from those nodes
-    calculate on an Euclidean plane.
+    Given the coordinate of two nodes, the function returns the euclidean distance of those nodes
 
     Parameters:
     -----------
+    x_1: float
+        the abscissa coordinate of the first node
+    y_1: float
+        the ordinate coordinate of the first node
+    x_2: float
+        the abscissa coordinate of the second node
+    y_2: float
+        the ordinate coordinate of the second node
 
-    p1: int
-    p2: int
-    q1: int
-    q2: int
+    Returns:
+    --------
+    int
+        the euclidean distance between the two nodes
     """
-    return round(math.sqrt(((p_1 - q_1) ** 2) + ((p_2 - q_2) ** 2)))
+    return round(math.sqrt(((x_1 - x_2) ** 2) + ((y_1 - y_2) ** 2)))
