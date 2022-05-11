@@ -25,12 +25,12 @@ def random_insertion(graph: Graph):
     remaining_nodes = [node_id for node_id in list(graph.nodes.keys())
                        if node_id not in [node_0.id, min_node.id]]
 
-    # li mescolo a caso, così dopo posso scorrere la lista linearmente 
+    # li mescolo a caso, così dopo posso scorrere la lista linearmente
     random.shuffle(remaining_nodes)
 
     #  -------- SELECTION --------
     for node_index in range(len(remaining_nodes)):
-        # dato che ho fatto una shuffle, scorro linearmente la lista
+        # dato che ho fatto una shuffle, scorro linearmente la lista per avere nodi casuali
         random_node_id = remaining_nodes[node_index]
 
         min_delta = None
