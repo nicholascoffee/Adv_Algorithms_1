@@ -12,16 +12,20 @@ def random_insertion(graph: Graph):
     min_node = None
     min_weight = None
 
+    #  cerco il nodo k più vicino al nodo 0
     for node, weight in graph.node_weights(node_0.id):
         if min_weight is None or weight < min_weight:
             min_weight = weight
             min_node = node
 
+    # lo aggiungo al circuito
     circuit.append(min_node, graph.weights)
 
+    # prendo tutti i nodi, tranne 0 e k
     remaining_nodes = [node_id for node_id in list(graph.nodes.keys())
                        if node_id not in [node_0.id, min_node.id]]
 
+    # li mescolo a caso, così dopo posso scorrere la lista linearmente 
     random.shuffle(remaining_nodes)
 
     #  -------- SELECTION --------
