@@ -58,6 +58,7 @@ class Circuit:
 
 
         """
+        # TODO commenta perchè nodo start
         new_node = CircuitNode(node.id, self.start_node, weights[node.id, self.start_node.id])
         self.total_weight += new_node.next_weight
 
@@ -66,6 +67,8 @@ class Circuit:
         self.end_node.next = new_node
         self.end_node.next_weight = weights[self.end_node.id, new_node.id]
         self.total_weight += self.end_node.next_weight
+
+        self.circuit_nodes[new_node.id] = new_node
 
         self.end_node = new_node
 
