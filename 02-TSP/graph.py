@@ -92,10 +92,14 @@ class Graph:
         """
         return list(self.nodes.values())
 
-    def adj_nodes(self, i: int):
+    def adj_nodes(self, node_id: int):
         for node in self.get_nodes():
-            if node.id != i:
+            if node.id != node_id:
                 yield node
+
+    def node_weights(self, node_id: int):
+        for node in self.adj_nodes(node_id):
+            yield node, self.weights[node_id, node.id]
 
     def calculate_weights(self) -> None:
         """
@@ -109,6 +113,8 @@ class Graph:
                 # Calculate the distance between the nodes and store the result in the matrix
                 # Indexes start from 0, but nodes start from 1
                 self.weights[node.id - 1, adj_node.id - 1] = self._get_distance(node, adj_node)
+
+
 
     def print(self) -> None:
         """

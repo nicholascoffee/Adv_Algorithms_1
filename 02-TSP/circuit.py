@@ -69,13 +69,13 @@ class Circuit:
 
         self.end_node = new_node
 
-    def insert_after_node(self, from_node: Node, to_new_node: Node, weights: np.array):
+    def insert_after_node(self, from_node_id: int, to_new_node_id: int, weights: np.array):
         """
         Insert a new circuit after a node in the circuit
 
         Parameters
         ----------
-        from_node: Node
+        from_node_id: int
             the node already in the circuit in which append the new node
         to_new_node: Node
             the node to insert in the circuit after from_node
@@ -85,12 +85,12 @@ class Circuit:
         """
 
         # Retrieve the CircuitNode from a Node object
-        current_node = self.circuit_nodes[from_node.id]
+        current_node = self.circuit_nodes[from_node_id]
         # Store the current next node in a variable
         current_next_node = current_node.next
 
         # Create the new node as a CircuitNode
-        new_next_node = CircuitNode(to_new_node.id)
+        new_next_node = CircuitNode(to_new_node_id)
 
         # Insert the new node after the given node and update next_weight and total_weight
         self.total_weight -= current_node.next_weight
@@ -110,9 +110,9 @@ class Circuit:
             self.end_node = new_next_node
 
     def __iter__(self):
-        yield self.start_node
+        yield self.start_node.id, self.start_node.next.id, self.start_node.next_weight
         nav = self.start_node.next
 
         while nav != self.start_node:
-            yield nav
+            yield nav.id, nav.next.id, nav.next_weight
             nav = nav.next
