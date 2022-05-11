@@ -52,3 +52,5 @@ def random_insertion(graph: Graph):
         #  -------- INSERTION --------
         # ora min_node_id è il nodo a cui devo appendere il mio nodo per minimizzare il peso aggiuntivo
         circuit.insert_after_node(min_node_id, random_node_id, graph.weights)
+
+    return circuit
