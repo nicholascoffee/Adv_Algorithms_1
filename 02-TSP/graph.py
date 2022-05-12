@@ -135,6 +135,24 @@ class Graph:
                 # Indexes start from 0, but nodes start from 1
                 self.weights[node.id - 1, adj_node.id - 1] = self._get_distance(node, adj_node)
 
+    def get_weight(self, first_node_id: int, second_node_id: int) -> int:
+        """
+        Given the ids of two nodes, the function returns the cost to go from one to the other
+
+        Parameters:
+        -----------
+        first_node_id: int
+            is the id of the node to go from
+        second_node_id: int
+            is the id of the node to go to
+
+        Returns:
+        --------
+        int:
+            the weight of the traverselling
+        """
+        return self.weights[first_node_id - 1][second_node_id - 1]
+
     def print(self) -> None:
         """
         Print all the information of the graph
