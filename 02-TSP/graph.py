@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Dict, List
+from parser import parse, Content
+import distances as dst
 import numpy as np
-
 
 @dataclass
 class Node:
@@ -19,14 +20,13 @@ class Node:
 
     """
     id: int
-    x: int
-    y: int
+    x: float
+    y: float
 
-    def __init__(self, i: int, x: int, y: int) -> None:
+    def __init__(self, i: int, x: float, y: float) -> None:
         self.id = i
         self.x = x
         self.y = y
-
 
 @dataclass
 class Graph:
@@ -59,13 +59,32 @@ class Graph:
         self.n = n
         self.weight_type = weight_type
         self.nodes = {}
-        self.weights = np.zeros((n, n), dtype=np.int16)
+        self.weights = np.zeros((n, n))
 
     def _get_distance(self, first: Node, second: Node) -> int:
-        # TODO: implement the module for calculate distance based on weigh_type
-        return 1
+        """
+        Given two nodes, the function returns the distance calculate baesd on
+        the variable "weight_type" of the graph
 
-    def add_node(self, i: int, x: int, y: int) -> None:
+        Attributes:
+        -----------
+        first: Node
+            node from calculate the distance
+        second: Node
+            node to calculate the distance
+
+        Returns:
+        int
+            the distance between two nodes
+        """
+        distance: int = 0
+        if self.weight_type == "EUC_2D":
+            distance = dst.get_distance_euclidean(first.x, first.y, second.x, second.y)
+        elif self.weight_type == "GEO":
+            distance = dst.get_distance_geographic(first.x, first.y, second.x, second.y)
+        return distance
+
+    def add_node(self, i: int, x: float, y: float) -> None:
         """
         Insert a new node in the graph with specific attributes
 
@@ -80,6 +99,8 @@ class Graph:
         """
         # Insert new node in the list of all nodes in the graph
         self.nodes[i] = Node(i, x, y)
+        if len(self.nodes) == self.n: 
+            self._calculate_weights()
 
     def get_nodes(self) -> List[Node]:
         """
@@ -101,7 +122,7 @@ class Graph:
         for node in self.adj_nodes(node_id):
             yield node, self.weights[node_id, node.id]
 
-    def calculate_weights(self) -> None:
+    def _calculate_weights(self) -> None:
         """
         Calculate all the distance in the nodes inside the graph.
         MUST BE USE ONLY WHEN THE GRAPH IS COMPLETE.
@@ -114,12 +135,30 @@ class Graph:
                 # Indexes start from 0, but nodes start from 1
                 self.weights[node.id - 1, adj_node.id - 1] = self._get_distance(node, adj_node)
 
-
-
     def print(self) -> None:
         """
         Print all the information of the graph
         """
         print(self.name, self.n, self.weight_type)
-        for node in self.nodes:
-            print(node, ":", list(self.adj_nodes(node)))
+        print(self.nodes)
+        print(self.weights)
+
+def graph_from_file(path: str) -> Graph:
+    """
+    Given the path to a ".tsp" file, the funtion return the corresponding graph
+
+    Attributes:
+    -----------
+    path: str
+        the path to the file which contains the information of the graph
+
+    Returns:
+    --------
+    Graph
+        the corresponding graph
+    """
+    content: Content = parse(path)
+    graph: Graph = Graph(content.name, content.n, content.weight_type)
+    for i, x, y in content.triples:
+        graph.add_node(i, x, y)
+    return graph
