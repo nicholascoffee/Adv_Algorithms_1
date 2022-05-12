@@ -6,7 +6,7 @@ from graph import Graph
 
 def random_insertion(graph: Graph):
     #  -------- INITIALIZATION --------
-    node_0 = graph.nodes[0]
+    node_0 = graph.nodes[1]
     circuit = Circuit(node_0)
 
     min_node = None
@@ -39,8 +39,8 @@ def random_insertion(graph: Graph):
             # ora ho node_id e next_node_id collegati da un weight.
             # Io devo aggiungere un nodo k tra node_id e next_node_id
             # candidate weight è il peso (da node_id a k) + (da k a next_node_id)
-            candidate_weight = graph.weights[random_node_id, node_id] \
-                               + graph.weights[random_node_id, next_node_id]
+            candidate_weight = graph.weights[random_node_id - 1, node_id - 1] \
+                               + graph.weights[random_node_id - 1, next_node_id - 1]
 
             # calcolo quanto peso mi aggiunge al circuito e prendo il più piccolo
             delta = candidate_weight - weight
