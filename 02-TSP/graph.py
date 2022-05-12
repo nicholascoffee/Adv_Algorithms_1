@@ -120,7 +120,7 @@ class Graph:
 
     def node_weights(self, node_id: int):
         for node in self.adj_nodes(node_id):
-            yield node, self.weights[node_id, node.id]
+            yield node, self.weights[node_id - 1, node.id - 1]
 
     def _calculate_weights(self) -> None:
         """
