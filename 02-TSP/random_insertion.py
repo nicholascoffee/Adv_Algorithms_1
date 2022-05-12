@@ -5,6 +5,8 @@ from graph import Graph
 
 
 def random_insertion(graph: Graph):
+    random.seed(0)  # metto il seed per avere sempre lo stesso risultato, nonostante il random
+
     #  -------- INITIALIZATION --------
     node_0 = graph.nodes[1]
     circuit = Circuit(node_0)
