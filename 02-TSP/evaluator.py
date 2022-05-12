@@ -1,6 +1,7 @@
 import gc
 import os
 import time
+from collections import defaultdict, OrderedDict
 from dataclasses import dataclass
 from typing import Callable, List
 
@@ -8,6 +9,7 @@ from tabulate import tabulate
 
 from circuit import Circuit
 from graph import Graph, graph_from_file
+import matplotlib.pyplot as plt
 
 TSPAlgorithm = Callable[[Graph], Circuit]
 
@@ -31,13 +33,15 @@ __optimal_results = {
 @dataclass
 class Evaluation:
     name: str
+    n: int
     result: float
     optimal_result: float
     error: float
     run_time: int
 
-    def __init__(self, name, result, optimal_result, run_time: int):
+    def __init__(self, name, n: int, result, optimal_result, run_time: int):
         self.name = name
+        self.n = n
         self.result = result
         self.optimal_result = optimal_result
         self.run_time = run_time
@@ -49,12 +53,33 @@ def evaluate(algorithm: TSPAlgorithm):
     evaluations: List[Evaluation] = []
 
     for index, file_name in enumerate(file_names):
-
         graph = graph_from_file("dataset/" + file_name)
         print("Loading %s (%d/%d)" % (file_name, index + 1, len(file_names)))
         evaluations.append(__evaluate_on_dataset(algorithm, graph))
 
     pretty_print(evaluations)
+
+    show_plot(evaluations)
+
+
+def show_plot(evaluations: List[Evaluation]):
+    evaluations.sort(key=lambda e: e.n)
+    data = defaultdict(list)
+
+    for evaluation in evaluations:
+        data[evaluation.n].append(evaluation.run_time)
+
+    ordered_data = OrderedDict(sorted(data.items()))
+
+    x = []
+    y = []
+
+    for k, v in ordered_data.items():
+        x.append(k)
+        y.append(sum(v) / len(v))
+
+    plt.plot(x, y)
+    plt.show()
 
 
 def pretty_print(evaluations: List[Evaluation]):
@@ -67,14 +92,16 @@ def pretty_print(evaluations: List[Evaluation]):
 
 
 def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph) -> Evaluation:
+    repetitions = 20
     gc.disable()
     start_time = time.perf_counter_ns()
-
-    circuit = algorithm(graph)
+    for _ in range(repetitions):
+        circuit = algorithm(graph)
 
     end_time = time.perf_counter_ns()
     gc.enable()
 
     optimal_result = __optimal_results.get(graph.name) or __optimal_results.get(graph.name[:-4])
 
-    return Evaluation(graph.name, circuit.total_weight, optimal_result, end_time - start_time)
+    return Evaluation(graph.name, graph.n, circuit.total_weight, optimal_result,
+                      round((end_time - start_time) / repetitions))
