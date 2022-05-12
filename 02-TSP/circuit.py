@@ -98,12 +98,12 @@ class Circuit:
         # Insert the new node after the given node and update next_weight and total_weight
         self.total_weight -= current_node.next_weight
         current_node.next = new_next_node
-        current_node.next_weight = weights[current_node.id, new_next_node.id]
+        current_node.next_weight = weights[current_node.id - 1, new_next_node.id - 1]
         self.total_weight += current_node.next_weight
 
         # The new node has the old next node as its own next node but with a different weight
         new_next_node.next = current_next_node
-        new_next_node.next_weight = weights[new_next_node.id, current_next_node.id]
+        new_next_node.next_weight = weights[new_next_node.id - 1, current_next_node.id - 1]
         self.total_weight += new_next_node.next_weight
 
         # Insert the new CircuitNode in the dictionary
