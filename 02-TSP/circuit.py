@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Dict
 
 import numpy as np
 
-from graph import Node
+from graph import Graph
+from node import Node
 
 
 @dataclass
@@ -58,14 +59,19 @@ class Circuit:
 
 
         """
-        # TODO commenta perchè nodo start
-        new_node = CircuitNode(node.id, self.start_node, weights[node.id, self.start_node.id])
+        # TODO commenta perchè nodo start, perche il next è lo start
+        if node.id == self.end_node.id:
+            return
+
+        new_node = CircuitNode(node.id, self.start_node, weights[node.id - 1, self.start_node.id - 1])
         self.total_weight += new_node.next_weight
 
         self.total_weight -= self.end_node.next_weight
 
         self.end_node.next = new_node
-        self.end_node.next_weight = weights[self.end_node.id, new_node.id]
+
+        self.end_node.next_weight = weights[self.end_node.id - 1, new_node.id - 1]
+
         self.total_weight += self.end_node.next_weight
 
         self.circuit_nodes[new_node.id] = new_node
@@ -109,7 +115,7 @@ class Circuit:
         # Insert the new CircuitNode in the dictionary
         self.circuit_nodes[new_next_node.id] = new_next_node
 
-        if self.start_node == self.end_node:
+        if self.start_node == self.end_node or current_node == self.end_node:
             self.end_node = new_next_node
 
     def __iter__(self):
@@ -119,3 +125,21 @@ class Circuit:
         while nav != self.start_node:
             yield nav.id, nav.next.id, nav.next_weight
             nav = nav.next
+
+    @staticmethod
+    def from_mst_preorder(mst: Graph, weights: np.array) -> 'Circuit':
+        starting_node: Node = mst.nodes[1]
+        circuit: Circuit = Circuit(starting_node)
+        Circuit.__preorder(mst, starting_node.id, circuit, weights)
+        return circuit
+
+    @staticmethod
+    def __preorder(mst: Graph, node_id: int, circuit: 'Circuit', weights) -> None:
+        #  inizio subito a vedere node_id
+        circuit.append(mst.nodes[node_id], weights)
+
+        # ora devo vedere i figli
+        for adj_node, weight in mst.node_weights(node_id):
+            adj_node_id = adj_node.id
+            if weight != 0 and not circuit.is_in_circuit(adj_node_id):
+                Circuit.__preorder(mst, adj_node_id, circuit, weights)

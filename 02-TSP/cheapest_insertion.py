@@ -1,6 +1,6 @@
 import sys
 from itertools import combinations
-from typing import List
+from typing import List, Tuple
 from circuit import Circuit
 from graph import Graph, Node
 

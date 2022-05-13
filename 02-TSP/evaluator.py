@@ -63,7 +63,6 @@ def evaluate(algorithm: TSPAlgorithm):
 
 
 def show_plot(evaluations: List[Evaluation]):
-    evaluations.sort(key=lambda e: e.n)
     data = defaultdict(list)
 
     for evaluation in evaluations:
@@ -84,6 +83,9 @@ def show_plot(evaluations: List[Evaluation]):
 
 def pretty_print(evaluations: List[Evaluation]):
     data = []
+
+    evaluations.sort(key=lambda e: e.n)
+
     for evaluation in evaluations:
         data.append([evaluation.name, evaluation.result, evaluation.optimal_result, evaluation.error * 100,
                      evaluation.run_time])
@@ -92,7 +94,7 @@ def pretty_print(evaluations: List[Evaluation]):
 
 
 def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph) -> Evaluation:
-    repetitions = 20
+    repetitions = 1
     gc.disable()
     start_time = time.perf_counter_ns()
     for _ in range(repetitions):
