@@ -50,7 +50,7 @@ def cheapest_insertion(graph: Graph):
     # Cycling all the nodes in the circuit, and one on one adding them in the circuit
     while not len(remaining_nodes) == 0:
         # Create all the pair representing edges in the partial circuit
-        pairs = list(combinations(circuit.circuit_nodes.keys(), 2))
+        #pairs = list(combinations(circuit.circuit_nodes.keys(), 2))
 
         min_weight: int = sys.maxsize
         id_predecessor_node = 0
@@ -59,10 +59,10 @@ def cheapest_insertion(graph: Graph):
         # For all the nodes not in the circuit
         for id_new_node in remaining_nodes:
             # For all the possible combinations of edges in the partial circuit
-            for id_i, id_j in pairs:
+            for id_i, id_j, w in circuit:
                 # Calculate the cost of adding the new_node in the partial circuit
                 candidate_weight: int = graph.get_weight(id_i, id_new_node) + \
-                                        graph.get_weight(id_new_node, id_j) - graph.get_weight(id_i, id_j)
+                                        graph.get_weight(id_new_node, id_j) - w
                 # If this cost is less of the previous one, save it and save the node and his predecessor
                 if candidate_weight < min_weight:
                     min_weight = candidate_weight
