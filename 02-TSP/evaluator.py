@@ -3,13 +3,15 @@ import os
 import time
 from collections import defaultdict, OrderedDict
 from dataclasses import dataclass
-from typing import Callable, List
+from typing import Callable, List, Dict, Tuple
 
 from tabulate import tabulate
 
 from circuit import Circuit
 from graph import Graph, graph_from_file
 import matplotlib.pyplot as plt
+
+from random_insertion import random_insertion
 
 TSPAlgorithm = Callable[[Graph], Circuit]
 
@@ -93,8 +95,7 @@ def pretty_print(evaluations: List[Evaluation]):
     print(tabulate(data, headers=["Name", "Result", "Optimal Result", "Error (%)", "Time (ns)"]))
 
 
-def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph) -> Evaluation:
-    repetitions = 1
+def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph, repetitions=1) -> Evaluation:
     gc.disable()
     start_time = time.perf_counter_ns()
     for _ in range(repetitions):
@@ -103,7 +104,45 @@ def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph) -> Evaluation:
     end_time = time.perf_counter_ns()
     gc.enable()
 
-    optimal_result = __optimal_results.get(graph.name) or __optimal_results.get(graph.name[:-4])
+    optimal_result = __get_optimal_result(graph.name)
 
     return Evaluation(graph.name, graph.n, circuit.total_weight, optimal_result,
                       round((end_time - start_time) / repetitions))
+
+
+def __get_optimal_result(graph_name: str):
+    return __optimal_results.get(graph_name) or __optimal_results.get(graph_name[:-4])
+
+
+def random_best_evaluation(repetitions: int):
+    file_names: List[str] = os.listdir("dataset")
+    evaluations: Dict[str, Tuple[Evaluation, int]] = {}
+
+    for index, file_name in enumerate(file_names):
+        graph = graph_from_file("dataset/" + file_name)
+        print("Loading %s (%d/%d)" % (file_name, index + 1, len(file_names)))
+
+        for i in range(repetitions):
+            evaluation = __evaluate_on_dataset(random_insertion, graph)
+            if evaluations.get(graph.name) is None:
+                evaluations[graph.name] = (evaluation, 1)
+            else:
+                best_evaluation: Evaluation = evaluations[graph.name][0]
+                if evaluation.result < best_evaluation.result:
+                    evaluations[graph.name] = (evaluation, i + 1)
+            if evaluation.result == evaluation.optimal_result:
+                break
+
+    pretty_print_random(evaluations)
+
+
+def pretty_print_random(evaluations: Dict[str, Tuple[Evaluation, int]]):
+    data = []
+
+    evaluations = {k: v for k, v in sorted(evaluations.items(), key=lambda item: item[1][0].n)}
+
+    for evaluation, i in evaluations.values():
+        data.append([evaluation.name, evaluation.result, evaluation.optimal_result, evaluation.error * 100,
+                     i, evaluation.run_time])
+
+    print(tabulate(data, headers=["Name", "Result", "Optimal Result", "Error (%)", "Attempt number", "Time (ns)"]))
