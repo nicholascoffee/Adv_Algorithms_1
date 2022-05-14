@@ -138,8 +138,14 @@ class Circuit:
         #  inizio subito a vedere node_id
         circuit.append(mst.nodes[node_id], weights)
 
+        children = []
+
         # ora devo vedere i figli
         for adj_node, weight in mst.node_weights(node_id):
             adj_node_id = adj_node.id
             if weight != 0 and not circuit.is_in_circuit(adj_node_id):
-                Circuit.__preorder(mst, adj_node_id, circuit, weights)
+                children.append((adj_node_id, weight))
+        children.sort(key=lambda i: i[1])
+
+        for child in children:
+            Circuit.__preorder(mst, child[0], circuit, weights)

@@ -5,7 +5,7 @@ from random_insertion import random_insertion
 
 
 def main():
-    evaluator.evaluate(approx_metric_tsp)
+    evaluator.evaluate(random_insertion)
 
 
 if __name__ == '__main__':
