@@ -3,6 +3,7 @@ from typing import Final
 
 RRR: Final = 6378.388
 
+
 def _coordinate_to_radian(coordinate: float) -> float:
     """
     Function to convert coordinate in radians
@@ -20,6 +21,7 @@ def _coordinate_to_radian(coordinate: float) -> float:
     degrees = int(coordinate)
     minutes = coordinate - degrees
     return math.radians(degrees + minutes * 5 / 3)
+
 
 def get_distance_geographic(latitude_1: float, longitude_1: float, latitude_2: float, longitude_2: float) -> int:
     """
@@ -54,6 +56,7 @@ def get_distance_geographic(latitude_1: float, longitude_1: float, latitude_2: f
 
     distance = RRR * math.acos(0.5 * ((1 + q1) * q2 - (1 - q1) * q3)) + 1
     return int(distance)
+
 
 def get_distance_euclidean(x_1: float, y_1: float, x_2: float, y_2: float) -> int:
     """

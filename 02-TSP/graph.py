@@ -1,32 +1,13 @@
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Tuple
+
+from node import Node
 from parser import parse, Content
 import distances as dst
 import numpy as np
 
-@dataclass
-class Node:
-    """
-    Dataclass for represent a node inside a graph.
+Edges = Dict[Tuple[int, int], int]
 
-    Attributes
-    ----------
-    i: int
-        the identifier for the node. Must be unique
-    x: int
-        the latitude coordinate of the node
-    y: int
-        the longitude coordinate of the node
-
-    """
-    id: int
-    x: float
-    y: float
-
-    def __init__(self, i: int, x: float, y: float) -> None:
-        self.id = i
-        self.x = x
-        self.y = y
 
 @dataclass
 class Graph:
@@ -99,7 +80,7 @@ class Graph:
         """
         # Insert new node in the list of all nodes in the graph
         self.nodes[i] = Node(i, x, y)
-        if len(self.nodes) == self.n: 
+        if len(self.nodes) == self.n:
             self._calculate_weights()
 
     def get_nodes(self) -> List[Node]:
@@ -119,8 +100,9 @@ class Graph:
                 yield node
 
     def node_weights(self, node_id: int):
-        for node in self.adj_nodes(node_id):
-            yield node, self.weights[node_id - 1, node.id - 1]
+        for node in self.get_nodes():
+            if node.id != node_id:
+                yield node, self.weights[node_id - 1, node.id - 1]
 
     def _calculate_weights(self) -> None:
         """
@@ -160,6 +142,26 @@ class Graph:
         print(self.name, self.n, self.weight_type)
         print(self.nodes)
         print(self.weights)
+
+    def get_all_nodes(self) -> List[int]:
+        return list(self.nodes.keys())
+
+    def get_sorted_edges(self) -> Edges:
+        edges = dict()
+
+        for i in range(1, self.n + 1):
+            for j in range(i + 1, self.n + 1):
+                edges[i, j] = self.get_weight(i, j)
+
+        return {k: v for k, v in sorted(edges.items(), key=lambda item: item[1])}
+
+    def update_edge(self, node1, node2, weight):
+
+        self.weights[node1 - 1, node2 - 1] = weight  # TODO commenta
+        self.weights[node2 - 1, node1 - 1] = weight
+
+
+
 
 def graph_from_file(path: str) -> Graph:
     """
