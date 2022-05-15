@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 from random_insertion import random_insertion
 
 TSPAlgorithm = Callable[[Graph], Circuit]
+ApproximationFunction = Callable[[int], float]
 
 __optimal_results = {
     "burma14": 3323,
@@ -50,7 +51,7 @@ class Evaluation:
         self.error = (result - optimal_result) / optimal_result
 
 
-def evaluate(algorithm: TSPAlgorithm):
+def evaluate(algorithm: TSPAlgorithm, approximation_function: ApproximationFunction):
     file_names: List[str] = os.listdir("dataset")
     evaluations: List[Evaluation] = []
 
@@ -59,40 +60,112 @@ def evaluate(algorithm: TSPAlgorithm):
         print("Loading %s (%d/%d)" % (file_name, index + 1, len(file_names)))
         evaluations.append(__evaluate_on_dataset(algorithm, graph))
 
-    pretty_print(evaluations)
+    pretty_print(evaluations, approximation_function)
 
-    show_plot(evaluations)
+    return evaluations
 
 
-def show_plot(evaluations: List[Evaluation]):
-    data = defaultdict(list)
+def prepare_data_for_plot(evaluations: List[Evaluation]):
+    time_data = defaultdict(list)
+    error_data = defaultdict(list)
 
     for evaluation in evaluations:
-        data[evaluation.n].append(evaluation.run_time)
+        time_data[evaluation.n].append(evaluation.run_time)
+        error_data[evaluation.n].append(evaluation.error)
 
-    ordered_data = OrderedDict(sorted(data.items()))
+    ordered_time_data = OrderedDict(sorted(time_data.items()))
+    ordered_error_data = OrderedDict(sorted(error_data.items()))
 
     x = []
-    y = []
 
-    for k, v in ordered_data.items():
+    time_y = []
+    error_y = []
+
+    for k, v in ordered_time_data.items():
         x.append(k)
-        y.append(sum(v) / len(v))
+        time_y.append(sum(v) / len(v))
 
-    plt.plot(x, y)
-    plt.show()
+    for k, v in ordered_error_data.items():
+        error_y.append(sum(v) / len(v) * 100)
+
+    return x, time_y, error_y
 
 
-def pretty_print(evaluations: List[Evaluation]):
+def make_plots(random_evaluations: List[Evaluation], cheapest_evaluations: List[Evaluation],
+               two_approx_evaluations: List[Evaluation]):
+    random_x, random_time_y, random_error_y = prepare_data_for_plot(random_evaluations)
+    cheapest_x, cheapest_time_y, cheapest_error_y = prepare_data_for_plot(cheapest_evaluations)
+    two_approx_x, two_approx_time_y, two_approx_error_y = prepare_data_for_plot(two_approx_evaluations)
+
+    #  ---- RANDOM PLOT ----
+    random_time_fig = plt.figure()
+    plt.title("Random Insertion run time")
+    plt.plot(random_x, random_time_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Time (ns)")
+    random_time_fig.savefig("figures/random_time.png")
+
+    random_error_fig = plt.figure()
+    plt.title("Random Insertion error")
+    plt.plot(random_x, random_error_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Error (%)")
+    random_error_fig.savefig("figures/random_error.png")
+
+    #  ---- CHEAPEST PLOT ----
+    cheapest_time_fig = plt.figure()
+    plt.title("Cheapest Insertion run time")
+    plt.plot(cheapest_x, cheapest_time_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Time (ns)")
+    cheapest_time_fig.savefig("figures/cheapest_time.png")
+
+    cheapest_error_fig = plt.figure()
+    plt.title("Cheapest Insertion error")
+    plt.plot(cheapest_x, cheapest_error_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Error (%)")
+    cheapest_error_fig.savefig("figures/cheapest_error.png")
+
+    #  ---- 2 APPROX PLOT ----
+    two_approx_time_fig = plt.figure()
+    plt.title("2-approx Insertion run time")
+    plt.plot(two_approx_x, two_approx_time_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Time (ns)")
+    two_approx_time_fig.savefig("figures/two_approx_time.png")
+
+    two_approx_error_fig = plt.figure()
+    plt.title("2-approx Insertion error")
+    plt.plot(two_approx_x, two_approx_error_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Error (%)")
+    two_approx_error_fig.savefig("figures/two_approx_error.png")
+
+    #  ---- COMPARISON PLOT ----
+    comparison_error_fig = plt.figure()
+    plt.title("Comparison algorithms error")
+    plt.plot(two_approx_x, random_error_y)
+    plt.plot(two_approx_x, cheapest_error_y)
+    plt.plot(two_approx_x, two_approx_error_y)
+    plt.xlabel("Node number")
+    plt.ylabel("Error (%)")
+    plt.legend(["Random Insertion", "Cheapest Insertion", "2-approx"])
+    comparison_error_fig.savefig("figures/comparison_error.png")
+
+
+def pretty_print(evaluations: List[Evaluation], approximation_function: ApproximationFunction):
     data = []
 
     evaluations.sort(key=lambda e: e.n)
 
     for evaluation in evaluations:
+        approx_factor = evaluation.optimal_result * approximation_function(evaluation.n)
+        approx_compliant = "YES" if ((evaluation.result / evaluation.optimal_result) <= approx_factor) else "NO"
         data.append([evaluation.name, evaluation.result, evaluation.optimal_result, evaluation.error * 100,
-                     evaluation.run_time])
+                     approx_compliant, evaluation.run_time])
 
-    print(tabulate(data, headers=["Name", "Result", "Optimal Result", "Error (%)", "Time (ns)"]))
+    print(tabulate(data, headers=["Name", "Result", "Optimal Result", "Error (%)", "Approx compliant", "Time (ns)"]))
 
 
 def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph, repetitions=1) -> Evaluation:
@@ -114,7 +187,7 @@ def __get_optimal_result(graph_name: str):
     return __optimal_results.get(graph_name) or __optimal_results.get(graph_name[:-4])
 
 
-def random_best_evaluation(repetitions: int):
+def random_best_evaluation(repetitions: int, single_evaluation: List[Evaluation]):
     file_names: List[str] = os.listdir("dataset")
     evaluations: Dict[str, Tuple[Evaluation, int]] = {}
 
@@ -132,6 +205,23 @@ def random_best_evaluation(repetitions: int):
                     evaluations[graph.name] = (evaluation, i + 1)
             if evaluation.result == evaluation.optimal_result:
                 break
+
+    random_best_data = []
+    for e in evaluations.values():
+        random_best_data.append(e[0])
+    x, _, random_best_error = prepare_data_for_plot(random_best_data)
+    _, _, random_single_error = prepare_data_for_plot(single_evaluation)
+
+    random_comparison_fig = plt.figure()
+
+    plt.title("Multiple run random comparison")
+    plt.plot(x, random_best_error)
+    plt.plot(x, random_single_error)
+    plt.legend(["Best error over " + str(repetitions) + " repetitions", "Single random instance"])
+    plt.xlabel("Nodes")
+    plt.ylabel("Error (%)")
+
+    random_comparison_fig.savefig("figures/random_comparison.png")
 
     pretty_print_random(evaluations)
 
