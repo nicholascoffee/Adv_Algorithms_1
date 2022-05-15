@@ -51,7 +51,7 @@ class Evaluation:
         self.error = (result - optimal_result) / optimal_result
 
 
-def evaluate(algorithm: TSPAlgorithm, approximation_function: ApproximationFunction):
+def evaluate(algorithm: TSPAlgorithm):
     file_names: List[str] = os.listdir("dataset")
     evaluations: List[Evaluation] = []
 
@@ -60,8 +60,7 @@ def evaluate(algorithm: TSPAlgorithm, approximation_function: ApproximationFunct
         print("Loading %s (%d/%d)" % (file_name, index + 1, len(file_names)))
         evaluations.append(__evaluate_on_dataset(algorithm, graph))
 
-    pretty_print(evaluations, approximation_function)
-
+    print("DONE\n")
     return evaluations
 
 
@@ -154,24 +153,26 @@ def make_plots(random_evaluations: List[Evaluation], cheapest_evaluations: List[
     comparison_error_fig.savefig("figures/comparison_error.png")
 
 
-def pretty_print(evaluations: List[Evaluation], approximation_function: ApproximationFunction):
+def pretty_print(evaluations: List[Evaluation], approximation_function: ApproximationFunction, name: str):
     data = []
 
-    evaluations.sort(key=lambda e: e.n)
+    with open("result/" + name + ".txt", "w") as f:
 
-    for evaluation in evaluations:
-        approx_factor = evaluation.optimal_result * approximation_function(evaluation.n)
-        approx_compliant = "YES" if ((evaluation.result / evaluation.optimal_result) <= approx_factor) else "NO"
-        data.append([evaluation.name, evaluation.result, evaluation.optimal_result, evaluation.error * 100,
-                     approx_compliant, evaluation.run_time])
+        evaluations.sort(key=lambda e: e.n)
 
-    print(tabulate(data, headers=["Name", "Result", "Optimal Result", "Error (%)", "Approx compliant", "Time (ns)"]))
+        for evaluation in evaluations:
+            approx_factor = evaluation.optimal_result * approximation_function(evaluation.n)
+            approx_compliant = "YES" if ((evaluation.result / evaluation.optimal_result) <= approx_factor) else "NO"
+            data.append([evaluation.name, evaluation.result, evaluation.optimal_result, evaluation.error * 100,
+                         approx_compliant, evaluation.run_time])
+
+        f.write(tabulate(data, headers=["Name", "Result", "Optimal Result", "Error (%)", "Approx compliant", "Time (ns)"]))
 
 
-def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph, repetitions=1) -> Evaluation:
+def __evaluate_on_dataset(algorithm: TSPAlgorithm, graph: Graph, repetitions=200) -> Evaluation:
     gc.disable()
     start_time = time.perf_counter_ns()
-    for _ in range(repetitions):
+    for i in range(repetitions):
         circuit = algorithm(graph)
 
     end_time = time.perf_counter_ns()
