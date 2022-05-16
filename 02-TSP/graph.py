@@ -161,8 +161,6 @@ class Graph:
         self.weights[node2 - 1, node1 - 1] = weight
 
 
-
-
 def graph_from_file(path: str) -> Graph:
     """
     Given the path to a ".tsp" file, the funtion return the corresponding graph

@@ -32,6 +32,20 @@ class CircuitNode:
 
 @dataclass
 class Circuit:
+    """
+    Class for represent an Hamiltonian Circuit
+
+    start_node : CircuitNode
+        a reference to a specific node to start our circuit somewhere
+    end_node : CircuitNode
+        the last node in the circuit (if assuming start_node is the first)
+        the next node must be the start_node
+    circuit_nodes : Dict[int, CircuitNode]
+        a dictionary used to access a specific node in the circuit based on its id
+        used to avoid linea search on the circuit
+    total_weight : int
+        sum of all costs to move from a node to its next one (more efficient than calculate on the fly each time)
+    """
     start_node: CircuitNode
     end_node: CircuitNode
     circuit_nodes: Dict[int, CircuitNode]
@@ -45,37 +59,56 @@ class Circuit:
         self.end_node = self.start_node
 
     def is_in_circuit(self, node_id: int) -> bool:
+        """
+        Returns true is the input node id is part of the circuit, false otherwise
+
+        Parameters
+        ----------
+        node_id: int
+            input node
+
+        Return
+        ----------
+        True if the input node id is part of the circuit, False otherwise
+        """
         return node_id in self.circuit_nodes
 
     def append(self, node: Node, weights: np.array):
         """
         Add a new node at the end of the circuit
+
         Parameters
         ----------
         node: Node
             node to add
         weights: np.array
             weights of the graph
-
-
         """
-        # TODO commenta perchè nodo start, perche il next è lo start
+
+        # we don't allow the same node two consecutive times in this method
         if node.id == self.end_node.id:
             return
 
+        # since we add a node after the end_node, the next node must be the start_node
         new_node = CircuitNode(node.id, self.start_node, weights[node.id - 1, self.start_node.id - 1])
+
+        # add the cost to go from this node to the next ones (start_node)
         self.total_weight += new_node.next_weight
 
+        # remove the old cost to go from end_node to start_node
         self.total_weight -= self.end_node.next_weight
 
         self.end_node.next = new_node
 
         self.end_node.next_weight = weights[self.end_node.id - 1, new_node.id - 1]
 
+        # add the cost to go from the current end_node to the new ones
         self.total_weight += self.end_node.next_weight
 
+        # add the new node to the dictionary of all nodes
         self.circuit_nodes[new_node.id] = new_node
 
+        # since we have a new end node, we must update end_node field
         self.end_node = new_node
 
     def insert_after_node(self, from_node_id: int, to_new_node_id: int, weights: np.array):
@@ -86,8 +119,8 @@ class Circuit:
         ----------
         from_node_id: int
             the node already in the circuit in which append the new node
-        to_new_node: Node
-            the node to insert in the circuit after from_node
+        to_new_node_id: int
+            the node id to insert in the circuit after from_node_id
         weights:
             all the weight in the graph
 
@@ -119,6 +152,15 @@ class Circuit:
             self.end_node = new_next_node
 
     def __iter__(self):
+        """
+        By implementing this method we can iterate over the circuit using a for loop
+        It automatically starts at start_node and ends when all nodes have been visited
+
+        This is the result:
+
+        for i, j, w in circuit:
+            # do something with node id "i", node "i" and the cost to go from i to j
+        """
         yield self.start_node.id, self.start_node.next.id, self.start_node.next_weight
         nav = self.start_node.next
 
@@ -128,6 +170,22 @@ class Circuit:
 
     @staticmethod
     def from_mst_preorder(mst: Graph, weights: np.array) -> 'Circuit':
+        """
+        Returns a Circuit from a MST tree using preorder visit
+
+        Parameters
+        ----------
+        mst: Graph
+            the input MST
+        weights: np.array
+            all the weight in the original graph
+
+        Returns
+        ----------
+        Circuit
+            the circuit based on the MST
+
+        """
         starting_node: Node = mst.nodes[1]
         circuit: Circuit = Circuit(starting_node)
         Circuit.__preorder(mst, starting_node.id, circuit, weights)
@@ -135,7 +193,6 @@ class Circuit:
 
     @staticmethod
     def __preorder(mst: Graph, node_id: int, circuit: 'Circuit', weights) -> None:
-        #  inizio subito a vedere node_id
         circuit.append(mst.nodes[node_id], weights)
 
         children = []
