@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import List, Tuple
 
+
 @dataclass
-class Content():
+class Content:
     """
     Dataclass for represent content to insert in a graph
 
@@ -22,11 +23,13 @@ class Content():
     weight_type: str
     triples: List[Tuple[int, float, float]]
 
-    def __init__(self, name: str = "", n: int = 0, weight_type: str = "", triples: List[Tuple[int, float, float]] = None):
+    def __init__(self, name: str = "", n: int = 0, weight_type: str = "",
+                 triples: List[Tuple[int, float, float]] = None):
         self.name = name
         self.n = n
         self.weight_type = weight_type
         self.triples = [] if (triples is None) else triples
+
 
 def parse(path: str) -> Content:
     with open(path, "r", encoding="utf-8") as file:
@@ -37,12 +40,11 @@ def parse(path: str) -> Content:
 
         # Iterate all the fileds until it finds where are the nodes
         while not line.startswith("NODE_COORD_SECTION"):
-            # TODO: Can we use switch case?
-            if (line.startswith("NAME:")):
+            if line.startswith("NAME:"):
                 content.name = line.split()[1]
-            elif (line.startswith("DIMENSION:")):
+            elif line.startswith("DIMENSION:"):
                 content.n = int(line.split()[1])
-            elif (line.startswith("EDGE_WEIGHT_TYPE")):
+            elif line.startswith("EDGE_WEIGHT_TYPE"):
                 content.weight_type = line.split()[1]
             # Read next line in any case
             line = file.readline()

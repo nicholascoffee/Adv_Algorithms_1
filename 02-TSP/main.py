@@ -1,5 +1,7 @@
 import math
 import random
+import sys
+import time
 
 import evaluator
 from approx_metric_tsp import approx_metric_tsp
@@ -17,6 +19,17 @@ def logn_function(n: int):
 
 def main():
     random.seed(404)
+
+    # execute the multiple random study with:
+    # python3 main.py --multiple-random
+    if "--multiple-random" in sys.argv:
+        print("PERFORMING MULTIPLE RANDOM STUDY OVER 500 INSTANCES")
+        print("_"*20)
+        print()
+        random_evaluation = evaluator.evaluate(random_insertion, 1)
+        evaluator.random_best_evaluation(1000, random_evaluation)
+        return
+
     random_evaluation = evaluator.evaluate(random_insertion)
     evaluator.pretty_print(random_evaluation, logn_function, "random")
 

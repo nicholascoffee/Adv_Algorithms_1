@@ -147,6 +147,15 @@ class Graph:
         return list(self.nodes.keys())
 
     def get_sorted_edges(self) -> Edges:
+        """
+        Returns the graph's Edges sorted by weight
+
+        Return
+        __________
+        Edges :
+            graph's Edges sorted by weight
+
+        """
         edges = dict()
 
         for i in range(1, self.n + 1):
@@ -156,11 +165,20 @@ class Graph:
         return {k: v for k, v in sorted(edges.items(), key=lambda item: item[1])}
 
     def update_edge(self, node1, node2, weight):
+        """
+        Change the weight that connects two nodes
+        Parameters
+        ----------
+        node1 : int
+            node 1
+        node2 : int
+            node 2
+        weight :
+            new weight
 
-        self.weights[node1 - 1, node2 - 1] = weight  # TODO commenta
+        """
+        self.weights[node1 - 1, node2 - 1] = weight
         self.weights[node2 - 1, node1 - 1] = weight
-
-
 
 
 def graph_from_file(path: str) -> Graph:

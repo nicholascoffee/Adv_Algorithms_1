@@ -51,20 +51,24 @@ class Evaluation:
         self.error = (result - optimal_result) / optimal_result
 
 
-def evaluate(algorithm: TSPAlgorithm):
+def evaluate(algorithm: TSPAlgorithm, repetitions=200):
     file_names: List[str] = os.listdir("dataset")
     evaluations: List[Evaluation] = []
 
     for index, file_name in enumerate(file_names):
         graph = graph_from_file("dataset/" + file_name)
         print("Loading %s (%d/%d)" % (file_name, index + 1, len(file_names)))
-        evaluations.append(__evaluate_on_dataset(algorithm, graph))
+        evaluations.append(__evaluate_on_dataset(algorithm, graph, repetitions))
 
     print("DONE\n")
     return evaluations
 
 
 def prepare_data_for_plot(evaluations: List[Evaluation]):
+    """
+    Prepares the data for matplotlib
+
+    """
     time_data = defaultdict(list)
     error_data = defaultdict(list)
 
@@ -197,7 +201,8 @@ def random_best_evaluation(repetitions: int, single_evaluation: List[Evaluation]
         print("Loading %s (%d/%d)" % (file_name, index + 1, len(file_names)))
 
         for i in range(repetitions):
-            evaluation = __evaluate_on_dataset(random_insertion, graph)
+            print("%d/%d" % (i, repetitions))
+            evaluation = __evaluate_on_dataset(random_insertion, graph, 1)
             if evaluations.get(graph.name) is None:
                 evaluations[graph.name] = (evaluation, 1)
             else:
