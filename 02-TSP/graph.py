@@ -147,6 +147,15 @@ class Graph:
         return list(self.nodes.keys())
 
     def get_sorted_edges(self) -> Edges:
+        """
+        Returns the graph's Edges sorted by weight
+
+        Return
+        __________
+        Edges :
+            graph's Edges sorted by weight
+
+        """
         edges = dict()
 
         for i in range(1, self.n + 1):
