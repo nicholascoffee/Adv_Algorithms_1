@@ -19,6 +19,9 @@ def logn_function(n: int):
 
 def main():
     random.seed(404)
+
+    # execute the multiple random study with:
+    # python3 main.py --multiple-random
     if "--multiple-random" in sys.argv:
         print("PERFORMING MULTIPLE RANDOM STUDY OVER 500 INSTANCES")
         print("_"*20)

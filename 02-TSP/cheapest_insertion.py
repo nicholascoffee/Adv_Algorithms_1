@@ -6,6 +6,7 @@ from graph import Graph, Node
 
 
 def _min_adjacent_node(node: Node, graph: Graph) -> Node:
+
     min_node = Node(0, 0, 0)
     min_weight = None
 

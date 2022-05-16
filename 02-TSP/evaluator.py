@@ -65,6 +65,10 @@ def evaluate(algorithm: TSPAlgorithm, repetitions=200):
 
 
 def prepare_data_for_plot(evaluations: List[Evaluation]):
+    """
+    Prepares the data for matplotlib
+
+    """
     time_data = defaultdict(list)
     error_data = defaultdict(list)
 
