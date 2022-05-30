@@ -64,9 +64,12 @@ class Graph:
         degree[a] += weight
         degree[b] += weight
 
+    def get_nodes(self) -> List[Node]:
+        # Big Cheat: getting nodes from keys of the dict of weighted degree
+        return self.weighted_degree.keys()
+
     def get_weight(self, a: int, b: int) -> int:
         return self.weighted_matrix[a][b]
-
 
 def graph_from_file(path: str) -> Graph:
     """
