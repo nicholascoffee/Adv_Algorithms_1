@@ -91,7 +91,3 @@ def graph_from_file(path: str) -> Graph:
     for triple in content.list_triple:
         graph.add_edge(triple[0], triple[1], triple[2])
     return graph
-
-if __name__ == "__main__":
-    g: Graph = graph_from_file("./dataset/input_random_01_10.txt")
-    print(g)
