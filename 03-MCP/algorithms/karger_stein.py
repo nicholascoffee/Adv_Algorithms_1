@@ -33,3 +33,31 @@ def __cumulative_weighted_array2(weighted_adjacency_list: List[Node]) -> Dict[No
             cumulative_dictionary[index] += (weight + cumulative_dictionary[index - 1])
         index += 1
     return cumulative_dictionary
+
+def __binary_search(values: List[Node], r: int) -> Node:
+    """
+    Given a list of nodes and a value r, the function uses the binary search to find an index i
+    such that values[i - 1] <= r < values[i]. Starts with 1 as first position.
+
+    Parameters
+    ----------
+    values: List[Node]
+        list of values where to find the index i
+
+    r: int
+        is the value against which to look for the index i 
+
+    Returns
+    -------
+    Node
+        the index (id) of the node which resepct the property
+    """
+    pivot: Node = len(values) // 2
+    if (len(values) <= 1):
+        return pivot + 1
+    if (r >= values[pivot - 1] and r < values[pivot]):
+        return pivot + 1
+    elif r < values[pivot - 1]:
+        return __binary_search(values[:pivot], r)
+    else: # r > values[pivot]
+        return (pivot + __binary_search(values[pivot:], r))
