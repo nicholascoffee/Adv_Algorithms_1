@@ -106,3 +106,61 @@ def __edge_select(g: Graph) -> Tuple[Node, Node]:
     # TODO: Assertion for avoid self-loop or non existing edges
     assert (v != u) and (g.get_weight(u, v) != 0), "Self-Loop or Not Existing Edge returned"
     return u, v
+
+def __contract_edge(g: Graph, u: Node, v: Node) -> None:
+    """
+    Given a graph and two nodes inside it, the function executes a contract of those nodes.
+
+    Parameters
+    ----------
+    g: Graph
+        is the graph in which do the contract
+
+    u: Node
+        is the first node to be contract
+
+    v: Node
+        is the second node to be contract
+
+    Returns
+    -------
+    Node
+
+    """
+    matrix: ndarray = g.weighted_matrix
+    degree: DefaultDict[Node, int] = g.weighted_degree
+    degree[u] = degree[u] + degree[v] + (2 * g.get_weight(u, v))
+    degree[v] = 0
+    matrix[u][v] = matrix[v][u] = 0
+    nodes: List[Node] = g.get_nodes()
+    for node in nodes:
+        if node != u and node != v:
+            matrix[u][node] += matrix[v][node]
+            matrix[node][u] += matrix[node][v]
+            matrix[v][node] = matrix[node][v] = 0
+    g.n -= 1
+
+def __contract(g: Graph, k: int) -> Graph:
+    """
+    Given a graph and an integer k, the function executes k times the contraction 
+    of nodes inside the graph.
+
+    Parameters
+    ----------
+    g: Graph
+        is the graph where execute k times the contraction
+
+    k: int
+        is the number of contractions 
+
+    Returns
+    -------
+    Graph
+        the graph after k contractions
+    """
+    n: int = g.n
+    # TODO: is n-k include in the iterations?
+    for _ in range(n - k):
+        u, v = __edge_select(g)
+        __contract_edge(g, u, v)
+    return g
