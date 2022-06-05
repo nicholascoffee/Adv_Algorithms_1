@@ -164,3 +164,17 @@ def __contract(g: Graph, k: int) -> Graph:
         u, v = __edge_select(g)
         __contract_edge(g, u, v)
     return g
+
+def recursive_contract(g: Graph) -> int:
+    graph_copy: Graph = deepcopy(g)
+    print(graph_copy)
+    n: int = graph_copy.n
+    if n <= 6:
+        graph_copy = __contract(graph_copy, 2)
+        return max(graph_copy.weighted_degree.values())
+    t: int = int(n/sqrt(2) + 1)
+    weight_list: List[int] = [0] * 2
+    for i in range(2):
+        graph_copy = __contract(g, t)
+        weight_list[i] = recursive_contract(graph_copy)
+    return min(weight_list)
