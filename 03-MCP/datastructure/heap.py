@@ -2,6 +2,7 @@ import sys
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
+
 @dataclass
 class HeapNode:
     name: int
@@ -27,7 +28,6 @@ class HeapNode:
 
     def __str__(self):
         return "name: %d | key: %d" % (self.name, self.key)
-
 
 
 def _left(index: int) -> int:
@@ -231,11 +231,3 @@ class Heap:
             self.sift_up(node_index)
         elif old_key < new_key:
             self.sift_down(node_index)
-
-import random
-h = Heap()
-for i in range(50):
-    h.push(HeapNode(i, random.randint(0, 100)))
-
-for _ in range(50):
-    print(h.pop())
