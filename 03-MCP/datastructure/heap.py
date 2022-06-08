@@ -1,4 +1,3 @@
-import sys
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
@@ -227,7 +226,7 @@ class Heap:
         old_key = self.heap[node_index].key
         self.heap[node_index].key = new_key
 
-        if old_key > new_key:
+        if old_key < new_key:
             self.sift_up(node_index)
-        elif old_key < new_key:
+        elif old_key > new_key:
             self.sift_down(node_index)
