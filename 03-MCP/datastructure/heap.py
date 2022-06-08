@@ -1,8 +1,6 @@
 import sys
 from dataclasses import dataclass
 from typing import List, Dict, Optional
-from datastructure.graph import Graph
-
 
 @dataclass
 class HeapNode:
@@ -26,6 +24,10 @@ class HeapNode:
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def __str__(self):
+        return "name: %d | key: %d" % (self.name, self.key)
+
 
 
 def _left(index: int) -> int:
@@ -87,20 +89,11 @@ class Heap:
         self.nodes = {}
         self.indexes = {}
 
-    def init_nodes(self, graph: Graph, starting_node: int):
-        for node in graph.get_all_nodes():
-            self.nodes[node] = HeapNode(node, sys.maxsize, -1)
-
-        self.nodes[starting_node].key = 0
-
-        for heap_node in self.nodes.values():
-            self.push(heap_node)
-
     def sift_up(self, node_index):
         if node_index == 0:
             return
         parent: int = _parent(node_index)
-        while node_index > 0 and self.heap[parent] > self.heap[node_index]:
+        while node_index > 0 and self.heap[parent] < self.heap[node_index]:
             self.swap(node_index, parent)
             node_index = parent
             if node_index != 0:
@@ -109,12 +102,12 @@ class Heap:
     def sift_down(self, node_index):
         left_index = _left(node_index)
         while left_index < self.size():
-            minimum_child_index = self.get_min_child_index(node_index)
-            if self.heap[node_index] > self.heap[minimum_child_index]:
-                self.swap(node_index, minimum_child_index)
+            maximum_child_index = self.get_max_child_index(node_index)
+            if self.heap[node_index] < self.heap[maximum_child_index]:
+                self.swap(node_index, maximum_child_index)
             else:
                 return
-            node_index = minimum_child_index
+            node_index = maximum_child_index
             left_index = _left(node_index)
 
     def size(self) -> int:
@@ -173,9 +166,9 @@ class Heap:
 
         return node
 
-    def get_min_child_index(self, node_index: int) -> int:
+    def get_max_child_index(self, node_index: int) -> int:
         """
-        Returns the index of the minimum child of a given node
+        Returns the index of the maximum child of a given node
         Parameters
         ----------
         node_index : int
@@ -183,7 +176,7 @@ class Heap:
 
         Returns
         -------
-        Minimum child of the input node
+        maximum child of the input node
         """
         left_index = _left(node_index)
 
@@ -196,23 +189,23 @@ class Heap:
 
         right_index = _right(node_index)
 
-        if self.heap[left_index] < self.heap[right_index]:
+        if self.heap[left_index] > self.heap[right_index]:
             return left_index
 
         return right_index
 
     def pop(self) -> HeapNode:
         """
-        Returns the minimum node in the heap and removes it from the heap
+        Returns the maximum node in the heap and removes it from the heap
         Returns
         -------
         HeapNode
-            minimum node in the heap
+            maximum node in the heap
         """
         if self.is_empty():
             raise Exception("Heap empty")
 
-        min_node = self.heap[0]
+        max_node = self.heap[0]
 
         self.swap(0, self.last_index())
 
@@ -220,7 +213,7 @@ class Heap:
 
         self.sift_down(0)
 
-        return min_node
+        return max_node
 
     def update(self, node_index: int, new_key: int):
         """
@@ -239,19 +232,10 @@ class Heap:
         elif old_key < new_key:
             self.sift_down(node_index)
 
-    def build_graph(self) -> Graph:
-        """
-        Returns a Graph object from the heap
+import random
+h = Heap()
+for i in range(50):
+    h.push(HeapNode(i, random.randint(0, 100)))
 
-        Returns
-        -------
-        Graph
-            the resulting graph
-
-        """
-        graph: Graph = Graph(0)
-
-        for node in self.nodes.values():
-            if node.parent != -1:
-                graph.add_edge(node.name, node.parent, node.key)
-        return graph
+for _ in range(50):
+    print(h.pop())
