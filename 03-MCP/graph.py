@@ -71,6 +71,12 @@ class Graph:
     def get_weight(self, a: int, b: int) -> int:
         return self.weighted_matrix[a][b]
 
+    def adj_nodes(self, node_id: int):
+        for node in self.get_nodes():
+            weight: int = self.weighted_matrix[node_id][node]
+            if node != node_id and weight != 0:
+                yield node, weight
+
 def graph_from_file(path: str) -> Graph:
     """
     Load the graph from a file
