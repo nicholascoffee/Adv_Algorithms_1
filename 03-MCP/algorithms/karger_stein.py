@@ -166,8 +166,21 @@ def __contract(g: Graph, k: int) -> Graph:
     return g
 
 def recursive_contract(g: Graph) -> int:
+    """
+    Given a graph, the function executes a sqrt(n,2) + 1 number of contractions
+    and returns the minimun cost cut.
+
+    Parameters:
+    -----------
+    g: Graph
+        is the graph where to execute the contractions
+
+    Returns:
+    --------
+    int
+        is the cost of the minimun cut
+    """
     graph_copy: Graph = deepcopy(g)
-    print(graph_copy)
     n: int = graph_copy.n
     if n <= 6:
         graph_copy = __contract(graph_copy, 2)
