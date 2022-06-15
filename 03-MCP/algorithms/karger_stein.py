@@ -184,7 +184,7 @@ def recursive_contract(g: Graph) -> int:
     n: int = graph_copy.n
     if n <= 6:
         graph_copy = __contract(graph_copy, 2)
-        return max(graph_copy.weighted_degree.values())
+        return graph_copy.weighted_matrix.max()
     t: int = int(n/sqrt(2) + 1)
     weight_list: List[int] = [0] * 2
     for i in range(2):
