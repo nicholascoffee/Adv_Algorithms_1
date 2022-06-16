@@ -58,7 +58,11 @@ def measure_stoer_wagner_algorithm(name: str, g: Graph) -> Analysis:
     """
     result: Analysis = Analysis(name, g.n, g.m)
     min_cut = 0
-    iterations = int(log2(g.n)) ** 2
+
+    iterations = 20
+    if g.n > 200:
+        iterations = 5
+
 
     graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
 
@@ -96,6 +100,8 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
     """
     result: Analysis = Analysis(name, g.n, g.m)
     iterations = 20
+    if g.n > 200:
+        iterations = 5
 
     graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
 
@@ -153,13 +159,14 @@ def print_comparison(karger_stein_analysis: List[Analysis], stoer_wagner_analysi
         f.write("Deltas: " + str(deltas))
 
 
-def print_analysis(algorithm_name: str, analysis_list: List[Analysis], complexity: ComplexityFunction):
+def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexity: ComplexityFunction):
     headers = ["Graph", "Minimum cut", "Hidden constant", "Execution time (ns)"]
 
     if algorithm_name == "Karger_Stein":
         headers.append("Discovery time (ns)")
 
     data = []
+    constant = 0
     for analysis in analysis_list:
         constant = analysis.execution_time / complexity(analysis.graph_n_size, analysis.graph_m_size)
 
@@ -174,10 +181,10 @@ def print_analysis(algorithm_name: str, analysis_list: List[Analysis], complexit
     with open("./results/" + algorithm_name + ".txt", "w") as f:
         f.write(str(table))
 
+    return constant
 
-def plot_karger_stein(analysis_list: List[Analysis]):
-    constant = 29.7729
 
+def plot_karger_stein(analysis_list: List[Analysis], constant):
     group_times: Dict[int, List[float]] = defaultdict(list)
     avg_times: Dict[int, float] = {}
     reference_values: Dict[int, float] = {}
@@ -198,14 +205,19 @@ def plot_karger_stein(analysis_list: List[Analysis]):
         y_effective.append(avg_times[n])
         y_reference.append(reference_values[n])
 
-    plt.plot(x, y_effective)
-    plt.plot(x, y_reference)
+    fig = plt.figure()
+    plt.title("Karger Stein Algorithm")
+    plt.xlabel("Nodes")
+    plt.ylabel("Time (ns)")
+    plt.plot(x, y_effective, label="Effective time")
+    plt.plot(x, y_reference, label="Reference time")
+    plt.legend()
 
     plt.show()
+    fig.savefig('./results/Karger_Stein.png', dpi=fig.dpi)
 
 
-def plot_stoer_wagner(analysis_list: List[Analysis]):
-    constant = 2449.42
+def plot_stoer_wagner(analysis_list: List[Analysis], constant):
 
     mn_group_times: Dict[(int, int), List[float]] = defaultdict(list)
 
@@ -237,10 +249,16 @@ def plot_stoer_wagner(analysis_list: List[Analysis]):
         y_effective.append(avg_times[n])
         y_reference.append(reference_values[n])
 
-    plt.plot(x, y_effective)
-    plt.plot(x, y_reference)
+    fig = plt.figure()
+    plt.title("Stoer Wagner Algorithm")
+    plt.xlabel("Nodes")
+    plt.ylabel("Time (ns)")
+    plt.plot(x, y_effective, label="Effective time")
+    plt.plot(x, y_reference, label="Reference time")
+    plt.legend()
 
     plt.show()
+    fig.savefig('./results/Stoer_Wagner.png', dpi=fig.dpi)
 
 
 def test() -> None:
@@ -260,16 +278,16 @@ def main():
         path: str = f"./dataset/{file_name}"
         print("Evaluation of " + file_name)
         g: Graph = graph_from_file(path)
-        if g.n > 100:
+        if g.n > 300:
             break
         karger_stein_analysis.append(measure_karger_stein_algorithm(file_name, copy.deepcopy(g)))
         stoer_wagner_analysis.append(measure_stoer_wagner_algorithm(file_name, copy.deepcopy(g)))
 
     # print_comparison(karger_stein_analysis, stoer_wagner_analysis)
-    #print_analysis("Karger_Stein", karger_stein_analysis, n2logn3)
-    print_analysis("Stoer_Wagner", stoer_wagner_analysis, mnlogn)
-    #plot_karger_stein(karger_stein_analysis)
-    plot_stoer_wagner(stoer_wagner_analysis)
+    ks_constant = analysis_study("Karger_Stein", karger_stein_analysis, n2logn3)
+    st_constant = analysis_study("Stoer_Wagner", stoer_wagner_analysis, mnlogn)
+    plot_karger_stein(karger_stein_analysis, ks_constant)
+    plot_stoer_wagner(stoer_wagner_analysis, st_constant)
 
 
 if __name__ == "__main__":
