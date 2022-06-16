@@ -61,9 +61,7 @@ def measure_stoer_wagner_algorithm(name: str, g: Graph) -> Analysis:
     result: Analysis = Analysis(name, g.n, g.m)
     min_cut = 0
 
-    iterations = 10
-    if g.n > 200:
-        iterations = 1
+    iterations = 20
 
     graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
 
@@ -103,9 +101,7 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
 
     required_iterations = int(log2(g.n)) ** 2  # minimum number of iterations for probability
 
-    time_iterations = 10  # iterations for time interferences
-    if g.n > 100:
-        time_iterations = 1
+    time_iterations = 20  # iterations for time interferences
 
     gc.disable()
 
@@ -283,9 +279,6 @@ def main():
         path: str = f"./dataset/{file_name}"
         print("Evaluation of " + file_name)
         g: Graph = graph_from_file(path)
-
-        if g.n > 200:
-            break
 
         karger_stein_analysis.append(measure_karger_stein_algorithm(file_name, copy.deepcopy(g)))
         stoer_wagner_analysis.append(measure_stoer_wagner_algorithm(file_name, copy.deepcopy(g)))
