@@ -132,17 +132,23 @@ class Heap:
     def is_empty(self) -> bool:
         return len(self.heap) == 0
 
-    def push(self, node: HeapNode):
+    def enqueue(self, node: HeapNode, is_last: bool = False):
         """
         Add a node in the heap
         Parameters
         ----------
+        is_last
         node : HeapNode
             input node
 
         """
+        self.nodes[node.name] = node
         self.heap.append(node)
         self.indexes[node.name] = self.last_index()
+
+        if is_last:
+            return
+
         self.sift_up(self.last_index())
 
     def get(self, node_index: int) -> HeapNode:
@@ -193,7 +199,7 @@ class Heap:
 
         return right_index
 
-    def pop(self) -> HeapNode:
+    def dequeue(self) -> HeapNode:
         """
         Returns the maximum node in the heap and removes it from the heap
         Returns
@@ -214,6 +220,10 @@ class Heap:
 
         return max_node
 
+    def update_by_name(self, node_name: int, new_key: int):
+        index = self.indexes[node_name]
+        self.update(index, new_key)
+
     def update(self, node_index: int, new_key: int):
         """
         Updates the key of a given node index
@@ -230,3 +240,10 @@ class Heap:
             self.sift_up(node_index)
         elif old_key > new_key:
             self.sift_down(node_index)
+
+    def __len__(self):
+        return len(self.heap)
+
+    def build_from_list(self, nodes_list: List[int]):
+        for node in nodes_list:
+            self.enqueue(HeapNode(node, 0), True)
