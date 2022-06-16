@@ -1,10 +1,11 @@
+import os
 from dataclasses import dataclass
 from typing import List
 
 from numpy import ndarray
 
 from datastructure.heap import Heap, HeapNode
-from graph import Graph, Node
+from graph import Graph, Node, graph_from_file
 
 
 @dataclass
@@ -56,7 +57,7 @@ def st_min_cut(g: Graph) -> Cut:
     return Cut(g, s, t)
 
 
-def global_min_cut(g: Graph) -> Cut:
+def global_min_cut_rec(g: Graph) -> Cut:
     nodes = g.get_nodes()
     if len(nodes) == 2:
         return Cut(g, nodes[0], nodes[1])
@@ -65,12 +66,16 @@ def global_min_cut(g: Graph) -> Cut:
 
     __st_contraction(g, cut1.s, cut1.t)
 
-    cut2 = global_min_cut(g)
+    cut2 = global_min_cut_rec(g)
 
     if cut1 <= cut2:
         return cut1
     else:
         return cut2
+
+
+def global_min_cut(g: Graph) -> int:
+    return global_min_cut_rec(g).value
 
 
 def __st_contraction(g: Graph, u: int, v: int) -> None:
@@ -110,3 +115,22 @@ def __st_contraction(g: Graph, u: int, v: int) -> None:
     g.get_nodes().remove(v)
     g.n -= 1
 
+if __name__ == "__main__":
+
+    tot = 0
+    files = []
+    for f in os.listdir("../dataset/"):
+        files.append(f)
+    files.sort()
+
+    res = ""
+    graphs = []
+    for f in files:
+        g = graph_from_file("../dataset/" + f)
+        g.name = f
+        graphs.append(g)
+
+    for g in graphs:
+        rec_n = 0
+        print(g.name)
+        print(global_min_cut(g))
