@@ -61,9 +61,9 @@ def measure_stoer_wagner_algorithm(name: str, g: Graph) -> Analysis:
     result: Analysis = Analysis(name, g.n, g.m)
     min_cut = 0
 
-    iterations = 20
+    iterations = 10
     if g.n > 200:
-        iterations = 5
+        iterations = 1
 
     graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
 
@@ -103,11 +103,9 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
 
     required_iterations = int(log2(g.n)) ** 2  # minimum number of iterations for probability
 
-    time_iterations = 5  # iterations for time interferences
+    time_iterations = 10  # iterations for time interferences
     if g.n > 100:
         time_iterations = 1
-
-    graph_clones = [[copy.deepcopy(g) for _ in range(required_iterations)] for _ in range(time_iterations)]
 
     gc.disable()
 
@@ -118,7 +116,7 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
             # Start second timer
             start_discovery_timer: int = perf_counter_ns()
             # Execute the Karger & Stein's algorithm
-            min_cut: int = recursive_contract(graph_clones[i][j])
+            min_cut: int = recursive_contract(copy.deepcopy(g))
             # end second timer
             end_discovery_timer: int = perf_counter_ns()
             # Check if the new minimum cost is less than its previous
@@ -137,7 +135,7 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
 
 
 def print_comparison(karger_stein_analysis: List[Analysis], stoer_wagner_analysis: List[Analysis]):
-    headers = ["Graph", "Karger Stein", "Stoer Wagner", "Equals", "Is Stoer Wagner better?"]
+    headers = ["Graph", "Karger Stein", "Stoer Wagner", "Equals?", "KS Error (%)", "Is Stoer Wagner better (or equal)?"]
     data = []
 
     times_st_strictly_better = 0
@@ -150,16 +148,25 @@ def print_comparison(karger_stein_analysis: List[Analysis], stoer_wagner_analysi
 
         data.append(
             [ks.graph_name, ks.minimum_cost, st.minimum_cost, "TRUE" if ks.minimum_cost == st.minimum_cost else "FALSE",
+             (ks.minimum_cost - st.minimum_cost) / st.minimum_cost,
              "TRUE" if ks.minimum_cost >= st.minimum_cost else "FALSE"])
 
     table = tabulate(data, headers=headers, tablefmt="grid")
+    latex_table = tabulate(data, headers=headers, tablefmt="latex")
+
     print("Times Stoer Wagner was strictly better: " + str(times_st_strictly_better))
     print("Deltas: " + str(deltas))
     print(table)
+
     with open("./results/comparison.txt", "w") as f:
         f.write(str(table))
+
+    with open("./results/comparison_tex.tex", "w") as f:
+        f.write(str(latex_table))
+
     with open("./results/comparison_data.txt", "w") as f:
         f.write("Times Stoer Wagner was strictly better: " + str(times_st_strictly_better))
+        f.write("\n")
         f.write("Deltas: " + str(deltas))
 
 
@@ -183,9 +190,13 @@ def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexit
         data.append(result)
 
     table = tabulate(data, headers=headers, tablefmt="grid")
+    latex_table = tabulate(data, headers=headers, tablefmt="latex")
 
     with open("./results/" + algorithm_name + ".txt", "w") as f:
         f.write(str(table))
+
+    with open("./results/" + algorithm_name + "_tex.tex", "w") as f:
+        f.write(str(latex_table))
 
     return sum(constants[-3:]) / 3  # average of last three constant
 
@@ -219,7 +230,6 @@ def plot_karger_stein(analysis_list: List[Analysis], constant):
     plt.plot(x, y_reference, label="Reference time")
     plt.legend()
 
-    plt.show()
     fig.savefig('./results/Karger_Stein.png', dpi=fig.dpi)
 
 
@@ -262,16 +272,7 @@ def plot_stoer_wagner(analysis_list: List[Analysis], constant):
     plt.plot(x, y_reference, label="Reference time")
     plt.legend()
 
-    plt.show()
     fig.savefig('./results/Stoer_Wagner.png', dpi=fig.dpi)
-
-
-def test() -> None:
-    for file_name in DATASET:
-        path: str = f"./dataset/{file_name}"
-        g: Graph = graph_from_file(path)
-        # measure_alg(graph, algorithm, num_call)
-        print(measure_karger_stein_algorithm(file_name, g))
 
 
 def main():
@@ -282,8 +283,10 @@ def main():
         path: str = f"./dataset/{file_name}"
         print("Evaluation of " + file_name)
         g: Graph = graph_from_file(path)
+
         if g.n > 200:
             break
+
         karger_stein_analysis.append(measure_karger_stein_algorithm(file_name, copy.deepcopy(g)))
         stoer_wagner_analysis.append(measure_stoer_wagner_algorithm(file_name, copy.deepcopy(g)))
 
