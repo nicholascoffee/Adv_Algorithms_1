@@ -6,6 +6,7 @@ from graph import Graph, Node
 from numpy import ndarray
 from math import sqrt
 
+
 # TODO: Big refactor of the two function called cumulative_weighted_array since
 # they do the same thing but with different implementation
 
@@ -22,6 +23,7 @@ def __cumulative_weighted_array(weighted_dict: Dict[Node, int]) -> Dict[Node, in
             cumulative_dict[node] += (degree + cumulative_dict[node - 1])
     return cumulative_dict
 
+
 def __cumulative_weighted_array2(weighted_adjacency_list: List[Node]) -> Dict[Node, int]:
     cumulative_dictionary: Dict[Node, int] = defaultdict(int)
     index: Node = 1
@@ -33,6 +35,7 @@ def __cumulative_weighted_array2(weighted_adjacency_list: List[Node]) -> Dict[No
             cumulative_dictionary[index] += (weight + cumulative_dictionary[index - 1])
         index += 1
     return cumulative_dictionary
+
 
 def __binary_search(values: List[Node], r: int) -> Node:
     """
@@ -59,8 +62,9 @@ def __binary_search(values: List[Node], r: int) -> Node:
         return pivot + 1
     elif r < values[pivot - 1]:
         return __binary_search(values[:pivot], r)
-    else: # r > values[pivot]
+    else:  # r > values[pivot]
         return (pivot + __binary_search(values[pivot:], r))
+
 
 def __random_select(cumulative_dict: Dict[Node, int]) -> Node:
     """
@@ -84,6 +88,7 @@ def __random_select(cumulative_dict: Dict[Node, int]) -> Node:
     u: Node = __binary_search(list(cumulative_dict.values()), r)
     return u
 
+
 def __edge_select(g: Graph) -> Tuple[Node, Node]:
     """
     Given a graph, the function returns a pair of nodes which represents a good minimun cut.
@@ -106,6 +111,7 @@ def __edge_select(g: Graph) -> Tuple[Node, Node]:
     # TODO: Assertion for avoid self-loop or non existing edges
     assert (v != u) and (g.get_weight(u, v) != 0), "Self-Loop or Not Existing Edge returned"
     return u, v
+
 
 def __contract_edge(g: Graph, u: Node, v: Node) -> None:
     """
@@ -140,6 +146,7 @@ def __contract_edge(g: Graph, u: Node, v: Node) -> None:
             matrix[v][node] = matrix[node][v] = 0
     g.n -= 1
 
+
 def __contract(g: Graph, k: int) -> Graph:
     """
     Given a graph and an integer k, the function executes k times the contraction 
@@ -165,6 +172,7 @@ def __contract(g: Graph, k: int) -> Graph:
         __contract_edge(g, u, v)
     return g
 
+
 def recursive_contract(g: Graph) -> int:
     """
     Given a graph, the function executes a sqrt(n,2) + 1 number of contractions
@@ -185,9 +193,10 @@ def recursive_contract(g: Graph) -> int:
     if n <= 6:
         graph_copy = __contract(graph_copy, 2)
         return graph_copy.weighted_matrix.max()
-    t: int = int(n/sqrt(2) + 1)
+    t: int = int(n / sqrt(2) + 1)
     weight_list: List[int] = [0] * 2
     for i in range(2):
         graph_copy = __contract(g, t)
         weight_list[i] = recursive_contract(graph_copy)
     return min(weight_list)
+

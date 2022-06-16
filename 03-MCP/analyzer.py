@@ -11,16 +11,18 @@ from algorithms.karger_stein import recursive_contract
 DATASET: List[str] = sorted(listdir("dataset"))
 
 # Type alias
-Time = float # Union[int, float]
-MinimunCutAlgorithm = Callable[[Graph], int]
+Time = float  # Union[int, float]
+MinimumCutAlgorithm = Callable[[Graph], int]
+
 
 @dataclass
 class Analysis:
     graph_name: str
-    minimun_cost: int = field(default=maxsize) 
+    minimum_cost: int = field(default=maxsize)
     execution_time: int = field(default=maxsize)
-    # Useful for Karger & Stein's analisys
+    # Useful for Karger & Stein's analysis
     discovery_time: int = field(default=maxsize, init=False)
+
 
 def measure_wagner_stoer_algorithm(name: str, g: Graph) -> Analysis:
     """
@@ -40,10 +42,10 @@ def measure_wagner_stoer_algorithm(name: str, g: Graph) -> Analysis:
     start_execution_timer: int = perf_counter_ns()
     for _ in range(int(log2(g.n)) ** 2):
         # Execute the Karger & Stein's algorithm
-        min_cut: int = 0 # call the algorithm
-        # Check if the new minimun cost is less than its previous
-        if min_cut < result.minimun_cost:
-            result.minimun_cost = min_cut
+        min_cut: int = 0  # call the algorithm
+        # Check if the new minimum cost is less than its previous
+        if min_cut < result.minimum_cost:
+            result.minimum_cost = min_cut
     # End first timer
     end_execution_timer: int = perf_counter_ns()
     gc.enable()
@@ -51,16 +53,17 @@ def measure_wagner_stoer_algorithm(name: str, g: Graph) -> Analysis:
     result.execution_time = end_execution_timer - start_execution_timer
     return result
 
+
 def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
     """
     Given a graph, the function executes log^2(n) the recursive_contract in order to have the error 
     probability less or equal 1/n.
-    It returns the complete analysis of that istance problem with the discovery time.
+    It returns the complete analysis of that instance problem with the discovery time.
 
     Parameters:
     -----------
     g: Graph
-        is the graph where to executes the Karger & Stein's algorithms.
+        is the graph where to execute the Karger & Stein's algorithms.
 
     Returns:
     --------
@@ -79,9 +82,9 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
         gc.enable()
         # end second timer
         end_discovery_timer: int = perf_counter_ns()
-        # Check if the new minimun cost is less than its previous
-        if min_cut < result.minimun_cost:
-            result.minimun_cost = min_cut
+        # Check if the new minimum cost is less than its previous
+        if min_cut < result.minimum_cost:
+            result.minimum_cost = min_cut
             result.discovery_time = end_discovery_timer - start_discovery_timer
     # End first timer
     end_execution_timer: int = perf_counter_ns()
@@ -90,6 +93,7 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
     # TODO: Debug
     assert result.discovery_time <= result.execution_time
     return result
+
 
 def test() -> None:
     for file_name in DATASET:
