@@ -1,11 +1,10 @@
-import os
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List
 
 from numpy import ndarray
 
 from datastructure.heap import Heap, HeapNode
-from graph import Graph, Node, graph_from_file
+from graph import Graph, Node
 
 
 @dataclass
@@ -111,25 +110,3 @@ def __st_contraction(g: Graph, u: int, v: int) -> None:
     g.get_nodes().remove(v)
     g.n -= 1
 
-
-if __name__ == "__main__":
-
-    tot = 0
-    files = []
-    for f in os.listdir("../dataset/"):
-        files.append(f)
-    files.sort()
-
-    res = ""
-    graphs = []
-    for f in files:
-        g = graph_from_file("../dataset/" + f)
-        g.name = f
-        graphs.append(g)
-
-    for g in graphs:
-        rec_n = 0
-        print(g.name)
-
-        res = global_min_cut(g)
-        print(res)
