@@ -188,15 +188,14 @@ def recursive_contract(g: Graph) -> int:
     int
         is the cost of the minimun cut
     """
-    graph_copy: Graph = deepcopy(g)
-    n: int = graph_copy.n
+    n: int = g.n
     if n <= 6:
-        graph_copy = __contract(graph_copy, 2)
-        return graph_copy.weighted_matrix.max()
+        g = __contract(g, 2)
+        return g.weighted_matrix.max()
     t: int = int(n / sqrt(2) + 1)
     weight_list: List[int] = [0] * 2
     for i in range(2):
-        graph_copy = __contract(g, t)
-        weight_list[i] = recursive_contract(graph_copy)
+        g = __contract(g, t)
+        weight_list[i] = recursive_contract(g)
     return min(weight_list)
 

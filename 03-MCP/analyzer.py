@@ -24,6 +24,8 @@ MinimumCutAlgorithm = Callable[[Graph], int]
 
 ComplexityFunction = Callable[[int, int], float]
 
+random.seed(0)
+
 
 def n2logn3(n: int, m: int):
     return (n ** 2) * (log2(n) ** 3)
@@ -63,7 +65,6 @@ def measure_stoer_wagner_algorithm(name: str, g: Graph) -> Analysis:
     if g.n > 200:
         iterations = 5
 
-
     graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
 
     gc.disable()
@@ -99,22 +100,25 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
         the minimum cost, the execution time and the discovery time of that specific graph.
     """
     result: Analysis = Analysis(name, g.n, g.m)
-    iterations = 20
-    if g.n > 200:
-        iterations = 5
 
-    graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
+    required_iterations = int(log2(g.n)) ** 2  # minimum number of iterations for probability
+
+    time_iterations = 5  # iterations for time interferences
+    if g.n > 100:
+        time_iterations = 1
+
+    graph_clones = [[copy.deepcopy(g) for _ in range(required_iterations)] for _ in range(time_iterations)]
 
     gc.disable()
 
     # Start first timer
     start_execution_timer: int = perf_counter_ns()
-    for i in range(iterations):
-        for _ in range(int(log2(g.n)) ** 2):
+    for i in range(time_iterations):
+        for j in range(required_iterations):
             # Start second timer
             start_discovery_timer: int = perf_counter_ns()
             # Execute the Karger & Stein's algorithm
-            min_cut: int = recursive_contract(graph_clones[i])
+            min_cut: int = recursive_contract(graph_clones[i][j])
             # end second timer
             end_discovery_timer: int = perf_counter_ns()
             # Check if the new minimum cost is less than its previous
@@ -126,9 +130,9 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
     # Elaborate total execution time
     gc.enable()
 
-    result.execution_time = (end_execution_timer - start_execution_timer) / iterations
+    result.execution_time = (end_execution_timer - start_execution_timer) / time_iterations
     # TODO: Debug
-    assert result.discovery_time <= result.execution_time
+    #    assert result.discovery_time <= result.execution_time
     return result
 
 
@@ -166,9 +170,11 @@ def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexit
         headers.append("Discovery time (ns)")
 
     data = []
-    constant = 0
+    constants = []
     for analysis in analysis_list:
         constant = analysis.execution_time / complexity(analysis.graph_n_size, analysis.graph_m_size)
+
+        constants.append(constant)
 
         result = [analysis.graph_name, analysis.minimum_cost, constant, analysis.execution_time]
         if algorithm_name == "Karger_Stein":
@@ -181,7 +187,7 @@ def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexit
     with open("./results/" + algorithm_name + ".txt", "w") as f:
         f.write(str(table))
 
-    return constant
+    return sum(constants[-3:]) / 3  # average of last three constant
 
 
 def plot_karger_stein(analysis_list: List[Analysis], constant):
@@ -218,7 +224,6 @@ def plot_karger_stein(analysis_list: List[Analysis], constant):
 
 
 def plot_stoer_wagner(analysis_list: List[Analysis], constant):
-
     mn_group_times: Dict[(int, int), List[float]] = defaultdict(list)
 
     group_times: Dict[int, List[float]] = defaultdict(list)
@@ -270,7 +275,6 @@ def test() -> None:
 
 
 def main():
-    random.seed(0)
     karger_stein_analysis = []
     stoer_wagner_analysis = []
 
@@ -278,12 +282,12 @@ def main():
         path: str = f"./dataset/{file_name}"
         print("Evaluation of " + file_name)
         g: Graph = graph_from_file(path)
-        if g.n > 300:
+        if g.n > 200:
             break
         karger_stein_analysis.append(measure_karger_stein_algorithm(file_name, copy.deepcopy(g)))
         stoer_wagner_analysis.append(measure_stoer_wagner_algorithm(file_name, copy.deepcopy(g)))
 
-    # print_comparison(karger_stein_analysis, stoer_wagner_analysis)
+    print_comparison(karger_stein_analysis, stoer_wagner_analysis)
     ks_constant = analysis_study("Karger_Stein", karger_stein_analysis, n2logn3)
     st_constant = analysis_study("Stoer_Wagner", stoer_wagner_analysis, mnlogn)
     plot_karger_stein(karger_stein_analysis, ks_constant)
