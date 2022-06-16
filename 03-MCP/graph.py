@@ -1,11 +1,12 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import DefaultDict, Dict, List, Optional, Tuple
+from typing import DefaultDict, Dict, List, Optional, Tuple, Set
 import numpy as np
 import parser
 
 Node = int
 Edges = Dict[Tuple[Node, Node], int]
+
 
 @dataclass
 class Graph:
@@ -26,15 +27,18 @@ class Graph:
     """
     n: int = field(default=0)
     m: int = field(default=0)
-    # TODO: we nedd edges?
+    # TODO: we need edges?
     # edges: Edges = field(default_factory=dict)
-    # Datastructure for the algorithms of Minimun Cut
+    # Datastructure for the algorithms of Minimum Cut
     weighted_matrix: np.ndarray = field(init=False)
     weighted_degree: DefaultDict[Node, int] = field(default_factory=lambda: defaultdict(int))
+
+    nodes: List[Node] = field(default_factory=lambda: list())
 
     def __post_init__(self):
         # Defer the initialization of the matrix since depends on an another field of the class
         self.weighted_matrix = np.zeros((self.n + 1, self.n + 1), dtype=int)
+        self.nodes = list(range(1, self.n + 1))
 
     def add_edge(self, a: int, b: int, weight: int) -> None:
         """
@@ -65,11 +69,17 @@ class Graph:
         degree[b] += weight
 
     def get_nodes(self) -> List[Node]:
-        # Big Cheat: getting nodes from keys of the dict of weighted degree
-        return self.weighted_degree.keys()
+        return self.nodes
 
     def get_weight(self, a: int, b: int) -> int:
         return self.weighted_matrix[a][b]
+
+    def adj_nodes(self, node_id: int):
+        for node in self.get_nodes():
+            weight: int = self.weighted_matrix[node_id][node]
+            if node != node_id and weight != 0:
+                yield node, weight
+
 
 def graph_from_file(path: str) -> Graph:
     """
