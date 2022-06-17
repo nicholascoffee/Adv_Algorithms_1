@@ -125,12 +125,20 @@ def measure_karger_stein_algorithm(name: str, g: Graph) -> Analysis:
     gc.enable()
 
     result.execution_time = (end_execution_timer - start_execution_timer) / time_iterations
-    # TODO: Debug
-    #    assert result.discovery_time <= result.execution_time
     return result
 
 
 def print_comparison(karger_stein_analysis: List[Analysis], stoer_wagner_analysis: List[Analysis]):
+    """
+    A function to print and save on files the comparison data between the two algorithms
+
+    Parameters
+    ----------
+    karger_stein_analysis
+    stoer_wagner_analysis
+
+    """
+
     headers = ["Graph", "Karger Stein", "Stoer Wagner", "Equals?", "KS Error (%)", "Is Stoer Wagner better (or equal)?"]
     data = []
 
@@ -166,7 +174,23 @@ def print_comparison(karger_stein_analysis: List[Analysis], stoer_wagner_analysi
         f.write("Deltas: " + str(deltas))
 
 
-def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexity: ComplexityFunction):
+def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexity: ComplexityFunction) -> float:
+    """
+    Given an analysis list, save on file the data on a table format (also in latex).
+    It also calculates the hidden constant
+
+    Parameters
+    ----------
+    algorithm_name
+    analysis_list
+    complexity
+
+    Returns
+    -------
+    float
+        the hidden constant
+
+    """
     headers = ["Graph", "Minimum cut", "Hidden constant", "Execution time (ns)"]
 
     if algorithm_name == "Karger_Stein":
@@ -198,6 +222,15 @@ def analysis_study(algorithm_name: str, analysis_list: List[Analysis], complexit
 
 
 def plot_karger_stein(analysis_list: List[Analysis], constant):
+    """
+    Plot Karger Stein Execution time
+
+    Parameters
+    ----------
+    analysis_list
+    constant
+
+    """
     group_times: Dict[int, List[float]] = defaultdict(list)
     avg_times: Dict[int, float] = {}
     reference_values: Dict[int, float] = {}
@@ -230,6 +263,16 @@ def plot_karger_stein(analysis_list: List[Analysis], constant):
 
 
 def plot_stoer_wagner(analysis_list: List[Analysis], constant):
+    """
+    Plot Stoer Wagner Execution time
+
+    Parameters
+    ----------
+    analysis_list
+    constant
+
+
+    """
     mn_group_times: Dict[(int, int), List[float]] = defaultdict(list)
 
     group_times: Dict[int, List[float]] = defaultdict(list)

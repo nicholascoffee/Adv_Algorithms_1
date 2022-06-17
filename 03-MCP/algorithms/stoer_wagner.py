@@ -10,6 +10,17 @@ from graph import Graph, Node, graph_from_file
 
 @dataclass
 class Cut:
+    """
+    A class for represent a st cut.
+
+    Attributes:
+    -----------
+    graph : Graph
+    s : Node
+    t : Node
+    value: int
+        the value of the cut
+    """
     graph: Graph
     s: Node
     t: Node
@@ -22,6 +33,14 @@ class Cut:
         self.value = self.__calc_value()
 
     def __calc_value(self):
+        """
+        Returns the value of cut based on the given s and t nodes
+
+        Returns
+        -------
+        int
+            the value of the st cut
+        """
         result = 0
         for _, weight in self.graph.adj_nodes(self.t):
             result += weight
@@ -39,6 +58,19 @@ class Cut:
 
 
 def st_min_cut(g: Graph) -> Cut:
+    """
+    Find the minimum cut between two nodes
+
+    Parameters
+    ----------
+    g : Graph
+        the input graph
+
+    Returns
+    -------
+    Cut
+        the cut between s and t
+    """
     queue: Heap = Heap()
 
     queue.build_from_list(g.get_nodes())
@@ -58,6 +90,19 @@ def st_min_cut(g: Graph) -> Cut:
 
 
 def global_min_cut_rec(g: Graph) -> Cut:
+    """
+    Find the global minimum cut using Stoer and Wagner's deterministic algorithm
+
+    Parameters
+    ----------
+    g : Graph
+        the input graph
+
+    Returns
+    -------
+    Cut
+        the global minimum cut based on Stoer and Wagner's deterministic algorithm
+    """
     nodes = g.get_nodes()
     if len(nodes) == 2:
         return Cut(g, nodes[0], nodes[1])
@@ -75,6 +120,19 @@ def global_min_cut_rec(g: Graph) -> Cut:
 
 
 def global_min_cut(g: Graph) -> int:
+    """
+    A wrapper for global_min_cut_rec to return just the value of the cut
+
+    Parameters
+    ----------
+    g : Graph
+        input graph
+
+    Returns
+    -------
+    int
+        value of the cut
+    """
     return global_min_cut_rec(g).value
 
 
@@ -95,7 +153,7 @@ def __st_contraction(g: Graph, u: int, v: int) -> None:
 
     Returns
     -------
-    Node
+    None
 
     """
 
@@ -115,22 +173,3 @@ def __st_contraction(g: Graph, u: int, v: int) -> None:
     g.get_nodes().remove(v)
     g.n -= 1
 
-if __name__ == "__main__":
-
-    tot = 0
-    files = []
-    for f in os.listdir("../dataset/"):
-        files.append(f)
-    files.sort()
-
-    res = ""
-    graphs = []
-    for f in files:
-        g = graph_from_file("../dataset/" + f)
-        g.name = f
-        graphs.append(g)
-
-    for g in graphs:
-        rec_n = 0
-        print(g.name)
-        print(global_min_cut(g))

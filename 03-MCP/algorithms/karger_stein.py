@@ -5,6 +5,7 @@ from graph import Graph, Node
 from numpy import ndarray
 from math import sqrt
 
+
 # TODO: Big refactor of the two function called cumulative_weighted_array since
 # they do the same thing but with different implementation
 
@@ -128,7 +129,7 @@ def __contract_edge(g: Graph, u: Node, v: Node) -> None:
 
     Returns
     -------
-    Node
+    None
 
     """
     matrix: ndarray = g.weighted_matrix
@@ -195,4 +196,3 @@ def recursive_contract(g: Graph) -> int:
         g = __contract(g, t)
         weight_list[i] = recursive_contract(g)
     return min(weight_list)
-
