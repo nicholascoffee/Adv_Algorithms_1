@@ -5,10 +5,6 @@ from graph import Graph, Node
 from numpy import ndarray
 from math import sqrt
 
-
-# TODO: Big refactor of the two function called cumulative_weighted_array since
-# they do the same thing but with different implementation
-
 def __cumulative_weighted_array(weighted_dict: Dict[Node, int]) -> Dict[Node, int]:
     """
     Given a dictionary of nodes and weighted degrees, the function returns a dictionary of nodes with
@@ -24,6 +20,10 @@ def __cumulative_weighted_array(weighted_dict: Dict[Node, int]) -> Dict[Node, in
 
 
 def __cumulative_weighted_array2(weighted_adjacency_list: List[Node]) -> Dict[Node, int]:
+    """
+    Given a list of weight of edges, the function returns a dictionary of nodes with
+    the cumulative weights of edges. In details, C[u] = sum[forAll v in V] W[u, v]
+    """
     cumulative_dictionary: Dict[Node, int] = defaultdict(int)
     index: Node = 1
     # Avoid the first value since is always zero, so starting from second element
