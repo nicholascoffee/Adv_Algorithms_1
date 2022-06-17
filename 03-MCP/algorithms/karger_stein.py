@@ -1,11 +1,9 @@
 from collections import defaultdict
-from copy import deepcopy
 from random import randrange
 from typing import Dict, List, Tuple, DefaultDict
 from graph import Graph, Node
 from numpy import ndarray
 from math import sqrt
-
 
 # TODO: Big refactor of the two function called cumulative_weighted_array since
 # they do the same thing but with different implementation
@@ -166,7 +164,6 @@ def __contract(g: Graph, k: int) -> Graph:
         the graph after k contractions
     """
     n: int = g.n
-    # TODO: is n-k include in the iterations?
     for _ in range(n - k):
         u, v = __edge_select(g)
         __contract_edge(g, u, v)
