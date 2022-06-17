@@ -1,9 +1,20 @@
 from dataclasses import dataclass
 from typing import List, Dict, Optional
 
-
 @dataclass
 class HeapNode:
+    """
+    A class for represent a node inside the heap.
+
+    Attributes:
+    -----------
+    name: int
+        the name (id) of the node
+    key: int
+        the key of the node
+    parent: int
+        the name (id) of the parent node
+    """
     name: int
     key: int
     parent: int
@@ -79,6 +90,18 @@ def _parent(index: int) -> int:
 
 @dataclass
 class Heap:
+    """
+    A class for represent a node inside the heap.
+
+    Attributes:
+    -----------
+    heap: List[HeapNode]
+        the name (id) of the node
+    nodes: Dict[int, HeapNode]
+        the key of the node
+    indexes: Dict[int, int]
+        the name (id) of the parent node
+    """
     heap: List[HeapNode]
     nodes: Dict[int, HeapNode]
     indexes: Dict[int, int]
