@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Tuple
 
+
 @dataclass
 class Content:
     """
@@ -22,6 +23,7 @@ class Content:
     m: int = field(default=0)
     # Avoiding sharing the same mutable variable in different objects
     list_triple: List[Tuple[int, ...]] = field(default_factory=list)
+
 
 def parse(path: str) -> Content:
     """
