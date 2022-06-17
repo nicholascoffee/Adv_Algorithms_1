@@ -26,6 +26,7 @@ ComplexityFunction = Callable[[int, int], float]
 
 random.seed(0)
 
+# Complexity functions of the two algorithms
 
 def n2logn3(n: int, m: int):
     return (n ** 2) * (log2(n) ** 3)
@@ -61,7 +62,7 @@ def measure_stoer_wagner_algorithm(name: str, g: Graph) -> Analysis:
     result: Analysis = Analysis(name, g.n, g.m)
     min_cut = 0
 
-    iterations = 20
+    iterations = 20  # we repeat the algorithms multiple time to reduce the time interferences
 
     graph_clones = [copy.deepcopy(g) for _ in range(iterations)]
 
@@ -231,6 +232,9 @@ def plot_karger_stein(analysis_list: List[Analysis], constant):
     constant
 
     """
+
+    # Since we have multiple instances with the same number of nodes, we need to calculate the average
+
     group_times: Dict[int, List[float]] = defaultdict(list)
     avg_times: Dict[int, float] = {}
     reference_values: Dict[int, float] = {}
@@ -240,7 +244,7 @@ def plot_karger_stein(analysis_list: List[Analysis], constant):
 
     for n in group_times:
         avg_times[n] = sum(group_times[n]) / len(group_times[n])
-        reference_values[n] = constant * n2logn3(n, 0)
+        reference_values[n] = constant * n2logn3(n, 0)  # calculate the reference value
 
     x = sorted(avg_times.keys())
 
@@ -273,6 +277,9 @@ def plot_stoer_wagner(analysis_list: List[Analysis], constant):
 
 
     """
+
+    # Since we have multiple instances with the same number of nodes, we need to calculate the average
+
     mn_group_times: Dict[(int, int), List[float]] = defaultdict(list)
 
     group_times: Dict[int, List[float]] = defaultdict(list)
@@ -287,9 +294,11 @@ def plot_stoer_wagner(analysis_list: List[Analysis], constant):
 
     for n, m in mn_group_times:
         for value in mn_group_times[n, m]:
+            # calculate the reference value for each graph size
             group_reference_times[n].append(constant * mnlogn(n, m))
             group_times[n].append(value)
 
+    # calculate the average grouping by number of nodes
     for n in group_times:
         avg_times[n] = sum(group_times[n]) / len(group_times[n])
         reference_values[n] = sum(group_reference_times[n]) / len(group_reference_times[n])
